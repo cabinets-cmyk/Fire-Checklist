@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Incident Checklist</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2c2c2c;
+            --text-color: #e1e1e1;
+            --accent-color: #d9534f;
+            --accent-hover: #c9302c;
+            --secondary-accent: #5bc0de;
+            --secondary-accent-hover: #31b0d5;
+            --border-color: #444;
+            --input-bg: #333;
+            --label-color: #aaa;
+            --btn-green: #5cb85c;
+            --btn-yellow: #f0ad4e;
+            --btn-red: #d9534f;
+            --btn-orange: #f89406;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--secondary-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            position: relative;
+        }
+
+        header h1 {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        #last-updated-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.8rem;
+            color: var(--label-color);
+        }
+
+        .control-section, .form-section {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            color: var(--label-color);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(217, 83, 79, 0.5);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-stack {
+             display: grid;
+             grid-template-columns: 1fr;
+             gap: 1rem;
+        }
+
+        fieldset {
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        legend {
+            padding: 0 0.5rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        input[type="checkbox"] {
+            accent-color: var(--accent-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .button-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .arrival-buttons {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .classification-buttons {
+             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+
+        .option-button {
+            padding: 0.75rem 0.5rem;
+            border: 2px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .option-button:hover {
+            border-color: var(--label-color);
+        }
+        
+        .option-button.selected {
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+            border-color: #fff;
+        }
+        
+        .option-button .desc {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: normal;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .btn-green { background-color: var(--btn-green); color: white; }
+        .btn-yellow { background-color: var(--btn-yellow); color: white; }
+        .btn-red { background-color: var(--btn-red); color: white; }
+        .btn-orange { background-color: var(--btn-orange); color: white; }
+        .btn-darkorange { background-color: #d15b05; color: white; }
+
+        .call-button-container {
+            margin: 1.5rem 0;
+        }
+        .call-button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--secondary-accent);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        .call-button:hover {
+            background-color: var(--secondary-accent-hover);
+        }
+        
+        .classification-note {
+            font-size: 0.8rem;
+            color: var(--label-color);
+            margin-top: 0.75rem;
+            text-align: center;
+            background-color: var(--input-bg);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .checklist-form { display: none; }
+        .checklist-form.active { display: block; }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 600px) {
+            .action-buttons { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
+        
+        .action-button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+        
+        #generate-report-btn { background-color: var(--accent-color); }
+        #generate-report-btn:hover { background-color: var(--accent-hover); }
+
+        .dispatch-btn { background-color: var(--secondary-accent); }
+        .dispatch-btn:hover { background-color: var(--secondary-accent-hover); }
+        .dispatch-btn:disabled { background-color: #555; opacity: 0.6; cursor: not-allowed; }
+
+        #report-output-container {
+            margin-top: 1.5rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+        
+        #report-output-container h3 { color: var(--accent-color); margin-bottom: 0.5rem; }
+        #report-output { white-space: pre-wrap; word-wrap: break-word; color: var(--text-color); font-family: "Menlo", "Consolas", monospace; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Fire Incident Checklist</h1>
+            <p>Select an incident to begin.</p>
+            <div id="last-updated-container">Last Updated: <span id="last-updated-time">Never</span></div>
+        </header>
+
+        <main>
+            <section class="control-section">
+                <label for="global-incident-selector">Select Current Incident:</label>
+                <select id="global-incident-selector"><option value="">Loading incidents...</option></select>
+            </section>
+
+            <section class="control-section">
+                <label for="checklist-type-selector">Checklist Type (can be changed manually):</label>
+                <select id="checklist-type-selector">
+                    <option value="bushfire">Bushfire (PAFTACS)</option>
+                    <option value="structure-fire">Structure Fire (HAULER)</option>
+                    <option value="road-crash">Road Crash Rescue</option>
+                </select>
+            </section>
+
+            <!-- Bushfire Checklist Form -->
+            <form id="bushfire-form" class="checklist-form active">
+                <fieldset>
+                    <legend>Arrival & Classification</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Arrival Code (on arrival)</label>
+                            <div class="button-group arrival-buttons">
+                                <input type="hidden" name="Arrival Code">
+                                <button type="button" class="option-button btn-green" data-value="4 4 - Nothing found, investigating, back up normal road.">4 4<span class="desc">Nothing found, investigating...</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="6 6 - As reported, incoming resources sufficient.">6 6<span class="desc">As reported, resources sufficient.</span></button>
+                                <button type="button" class="option-button btn-red" data-value="8 8 - Incident rapidly escalating, Upgrade response 3rd alarm or higher.">8 8<span class="desc">Rapidly escalating, upgrade response.</span></button>
+                            </div>
+                        </div>
+                        
+                        <div class="call-button-container">
+                            <a href="tel:1800198140" class="call-button">Call Comcen - 1800 198 140</a>
+                        </div>
+
+                        <div>
+                            <label>Classification (within 5 minutes of arrival)</label>
+                            <div class="button-group classification-buttons">
+                                <input type="hidden" name="Classification">
+                                <button type="button" class="option-button btn-green" data-value="1st Alarm (1-2 Appliances)">1st Alarm<span class="desc">1-2 Appliances</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="2nd Alarm (2-6 Appliances)">2nd Alarm<span class="desc">2-6 Appliances</span></button>
+                                <button type="button" class="option-button btn-orange" data-value="3rd Alarm (6-12 Appliances)">3rd Alarm<span class="desc">6-12 Appliances</span></button>
+                                <button type="button" class="option-button btn-red" data-value="4th Alarm (12+ Appliances)">4th Alarm<span class="desc">12+ Appliances</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>PAFTACS Report (within 15 minutes of arrival)</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label for="p-position">P: Position & Direction of Travel</label>
+                            <input type="text" id="p-position" name="Position">
+                        </div>
+                        <div class="checkbox-group">
+                            <strong>Property Threatened:</strong>
+                            <label><input type="checkbox" name="Property Threatened" value="Nil">Nil</label>
+                            <label><input type="checkbox" name="Property Threatened" value="Houses">Houses</label>
+                            <label><input type="checkbox" name="Property Threatened" value="People">People</label>
+                            <label><input type="checkbox" name="Property Threatened" value="Livestock">Livestock</label>
+                            <label><input type="checkbox" name="Property Threatened" value="Critical Infrastructure">Critical Infrastructure</label>
+                        </div>
+                        <div>
+                            <label for="a-area">A: Area Involved (Hectares)</label>
+                            <input type="number" id="a-area" name="Area (ha)">
+                        </div>
+                        <div>
+                            <label for="f-fuel-load">F: Fuel Load & Type</label>
+                            <select id="f-fuel-load" name="Fuel Load"><option>Light</option><option>Moderate</option><option>Heavy</option></select>
+                            <select name="Fuel Type" style="margin-top: 0.5rem;"><option>Grass</option><option>Scrub/Shrubland</option><option>Woodland</option><option>Forest/Plantation</option></select>
+                        </div>
+                        <div>
+                            <label for="t-time">T: Estimated Time to Control</label>
+                            <input type="text" id="t-time" name="Time to Control">
+                        </div>
+                        <div>
+                            <label for="a-assistance">A: Assistance Required</label>
+                            <textarea id="a-assistance" name="Assistance Required" rows="3"></textarea>
+                        </div>
+                        <div>
+                            <label for="c-comms">C: Communications & Control</label>
+                            <input type="text" id="c-comms" name="Comms & Control" placeholder="Channel, Incident Name, Control Point">
+                        </div>
+                        <div>
+                            <label for="s-safety">S: Surface Winds & Safety</label>
+                            <textarea id="s-safety" name="Winds & Safety" rows="3" placeholder="Direction, Strength, Red Flags"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+
+            <!-- Structure Fire Checklist Form -->
+            <form id="structure-fire-form" class="checklist-form">
+                <fieldset>
+                    <legend>Arrival & Classification</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Arrival Code (on arrival)</label>
+                            <div class="button-group arrival-buttons">
+                                <input type="hidden" name="Arrival Code">
+                                <button type="button" class="option-button btn-green" data-value="4 4 - Nothing found, investigating, back up normal road.">4 4<span class="desc">Nothing found, investigating...</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="6 6 - As reported, incoming resources sufficient.">6 6<span class="desc">As reported, resources sufficient.</span></button>
+                                <button type="button" class="option-button btn-red" data-value="8 8 - Incident rapidly escalating, Upgrade response 3rd alarm or higher.">8 8<span class="desc">Rapidly escalating, upgrade response.</span></button>
+                            </div>
+                        </div>
+
+                        <div class="call-button-container">
+                            <a href="tel:1800198140" class="call-button">Call Comcen - 1800 198 140</a>
+                        </div>
+
+                        <div>
+                            <label>Classification (within 5 minutes of arrival)</label>
+                            <div class="button-group classification-buttons">
+                                <input type="hidden" name="Classification">
+                                <button type="button" class="option-button btn-green" data-value="1st Alarm">1st Alarm</button>
+                                <button type="button" class="option-button btn-yellow" data-value="2nd Alarm">2nd Alarm</button>
+                                <button type="button" class="option-button btn-orange" data-value="3rd Alarm">3rd Alarm</button>
+                                <button type="button" class="option-button btn-darkorange" data-value="4th Alarm">4th Alarm</button>
+                                <button type="button" class="option-button btn-red" data-value="5th Alarm">5th Alarm</button>
+                            </div>
+                            <p class="classification-note">1 Alarm = 1 FRS Appliance (3.4U, HSR, CP), BA operations require 2nd Alarm or Higher.</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>HAULER Report (within 15 minutes of arrival)</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label for="h-height">H: Height</label>
+                            <input type="text" id="h-height" name="Height" placeholder="e.g., Single Story, 2 Story">
+                        </div>
+                        <div>
+                            <label for="a-area-size">A: Area/Size</label>
+                            <input type="text" id="a-area-size" name="Area/Size" placeholder="e.g., 3x2 or 20m x 15m">
+                        </div>
+                        <div>
+                            <label for="u-use">U: Use / Construction</label>
+                            <input type="text" id="u-use" name="Use/Construction" placeholder="e.g., Residential, Brick/Tile">
+                        </div>
+                        <div>
+                            <label for="l-lines">L: Lines of Hose / Actions</label>
+                            <input type="text" id="l-lines" name="Lines/Actions" placeholder="e.g., 2 lines of hose, 1 team of BA">
+                        </div>
+                        <div>
+                            <label for="e-exposures">E: Exposures / Evacuations</label>
+                            <input type="text" id="e-exposures" name="Exposures/Evacuations">
+                        </div>
+                        <div>
+                            <label for="r-resources">R: Resources Required</label>
+                            <input type="text" id="r-resources" name="Resources Required">
+                        </div>
+                        <div>
+                            <label for="s-staging">S: Staging Area / Safety</label>
+                            <input type="text" id="s-staging" name="Staging/Safety" placeholder="Control Point, Incident Name, Channel">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+
+            <!-- Road Crash Checklist Form -->
+            <form id="road-crash-form" class="checklist-form">
+                <fieldset>
+                    <legend>Arrival & Classification</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Arrival Code (on arrival)</label>
+                            <div class="button-group arrival-buttons">
+                                <input type="hidden" name="Arrival Code">
+                                <button type="button" class="option-button btn-green" data-value="4 4 - Nothing found, investigating, back up normal road.">4 4<span class="desc">Nothing found...</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="6 6 - As reported, incoming resources sufficient.">6 6<span class="desc">As reported...</span></button>
+                                <button type="button" class="option-button btn-red" data-value="8 8 - Incident rapidly escalating, Upgrade response 3rd alarm or higher.">8 8<span class="desc">Escalating...</span></button>
+                            </div>
+                        </div>
+
+                        <div class="call-button-container">
+                            <a href="tel:1800198140" class="call-button">Call Comcen - 1800 198 140</a>
+                        </div>
+
+                        <div>
+                            <label>Classification (within 5 minutes of arrival)</label>
+                            <div class="button-group classification-buttons">
+                                <input type="hidden" name="Classification">
+                                <button type="button" class="option-button btn-green" data-value="1st Alarm (No Entrapment)">1st Alarm<span class="desc">No Entrapment</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="2nd Alarm (Entrapment)">2nd Alarm<span class="desc">Entrapment</span></button>
+                                <button type="button" class="option-button btn-red" data-value="3rd Alarm (Heavy Rescue, Complex Rescue)">3rd Alarm<span class="desc">Heavy/Complex Rescue</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>SITREP (within 15 minutes of arrival)</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label for="rc-situation">Situation</label>
+                            <input type="text" id="rc-situation" name="Situation" placeholder="e.g., Car v Tree, Truck v Truck">
+                        </div>
+                        <div>
+                            <label for="rc-entrapment">Entrapment</label>
+                            <input type="text" id="rc-entrapment" name="Entrapment" placeholder="e.g., No Entrapment, 1 Person Trapped">
+                        </div>
+                        <div>
+                            <label for="rc-hazards">Hazards</label>
+                            <input type="text" id="rc-hazards" name="Hazards" placeholder="e.g., Fuel Spill, Traffic, Power Lines">
+                        </div>
+                        <div>
+                            <label for="rc-actions">Actions Being Undertaken</label>
+                            <textarea id="rc-actions" name="Actions" rows="3"></textarea>
+                        </div>
+                        <div>
+                            <label for="rc-resources">Resources (On Scene / Required)</label>
+                            <textarea id="rc-resources" name="Resources" rows="3"></textarea>
+                        </div>
+                         <div>
+                            <label for="rc-time">Estimated Time on Scene</label>
+                            <input type="text" id="rc-time" name="Estimated Time">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+
+            <section class="action-buttons">
+                <button id="generate-report-btn" class="action-button">Generate Report</button>
+                <button id="copy-report-btn" class="action-button dispatch-btn" disabled>Copy Report</button>
+                <button id="download-report-btn" class="action-button dispatch-btn" disabled>Download Report</button>
+                <button id="email-report-btn" class="action-button dispatch-btn" disabled>Email Report</button>
+                <button id="sms-report-btn" class="action-button dispatch-btn" disabled>SMS Report</button>
+            </section>
+
+            <div id="report-output-container" style="display: none;">
+                <h3>Generated Report</h3>
+                <pre id="report-output"></pre>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const globalIncidentSelector = document.getElementById('global-incident-selector');
+            const checklistSelector = document.getElementById('checklist-type-selector');
+            const forms = document.querySelectorAll('.checklist-form');
+            const generateBtn = document.getElementById('generate-report-btn');
+            const copyBtn = document.getElementById('copy-report-btn');
+            const downloadBtn = document.getElementById('download-report-btn');
+            const emailBtn = document.getElementById('email-report-btn');
+            const smsBtn = document.getElementById('sms-report-btn');
+            const reportOutputContainer = document.getElementById('report-output-container');
+            const reportOutput = document.getElementById('report-output');
+            const lastUpdatedEl = document.getElementById('last-updated-time');
+
+            let generatedReportText = '';
+            const RSS_URL = 'https://api.allorigins.win/raw?url=https://api.emergency.wa.gov.au/v1/rss/incidents';
+
+            async function fetchAndPopulateIncidents() {
+                try {
+                    const response = await fetch(RSS_URL);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const xmlString = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+                    
+                    const items = xmlDoc.querySelectorAll("item");
+                    const sortedItems = Array.from(items).sort((a, b) => {
+                        const dateA = new Date(a.querySelector("pubDate").textContent);
+                        const dateB = new Date(b.querySelector("pubDate").textContent);
+                        return dateB - dateA;
+                    });
+
+                    const currentVal = globalIncidentSelector.value;
+                    globalIncidentSelector.innerHTML = '<option value="">Select an incident...</option>';
+                    sortedItems.forEach(item => {
+                        const title = item.querySelector("title").textContent;
+                        if (title.toLowerCase().includes('burn off')) return;
+                        const option = document.createElement('option');
+                        option.value = title;
+                        option.textContent = title;
+                        globalIncidentSelector.appendChild(option);
+                    });
+                    globalIncidentSelector.value = currentVal;
+                    
+                    lastUpdatedEl.textContent = new Date().toLocaleTimeString();
+
+                } catch (error) {
+                    console.error("Failed to fetch or parse RSS feed:", error);
+                    lastUpdatedEl.textContent = `Error at ${new Date().toLocaleTimeString()}`;
+                }
+            }
+
+            function initializeButtonGroups() {
+                document.querySelectorAll('.button-group').forEach(group => {
+                    const hiddenInput = group.querySelector('input[type="hidden"]');
+                    const buttons = group.querySelectorAll('.option-button');
+                    buttons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            hiddenInput.value = button.dataset.value;
+                            buttons.forEach(btn => btn.classList.remove('selected'));
+                            button.classList.add('selected');
+                        });
+                    });
+                });
+            }
+
+            function setDispatchButtonsState(enabled) {
+                copyBtn.disabled = !enabled;
+                downloadBtn.disabled = !enabled;
+                emailBtn.disabled = !enabled;
+                smsBtn.disabled = !enabled;
+            }
+
+            function switchForm(selectedValue) {
+                forms.forEach(form => form.classList.toggle('active', form.id === `${selectedValue}-form`));
+                reportOutputContainer.style.display = 'none';
+                generatedReportText = '';
+                setDispatchButtonsState(false);
+            }
+
+            globalIncidentSelector.addEventListener('change', (e) => {
+                const selectedText = e.target.options[e.target.selectedIndex].text.toLowerCase();
+                let newChecklistType = '';
+
+                if (selectedText.includes('active alarm') || selectedText.includes('structure fire')) {
+                    newChecklistType = 'structure-fire';
+                } else if (selectedText.includes('bushfire')) {
+                    newChecklistType = 'bushfire';
+                } else if (selectedText.includes('road crash')) {
+                    newChecklistType = 'road-crash';
+                }
+
+                if (newChecklistType) {
+                    checklistSelector.value = newChecklistType;
+                    switchForm(newChecklistType);
+                }
+            });
+            
+            checklistSelector.addEventListener('change', (e) => switchForm(e.target.value));
+
+            generateBtn.addEventListener('click', () => {
+                const activeForm = document.querySelector('.checklist-form.active');
+                if (!activeForm) return;
+
+                const incidentName = globalIncidentSelector.value;
+                if (!incidentName) {
+                    alert("Please select an incident from the list at the top.");
+                    return;
+                }
+
+                const formData = new FormData(activeForm);
+                let reportBody = `INCIDENT REPORT - ${activeForm.id.replace('-form', '').toUpperCase()}\n`;
+                reportBody += `Report Time: ${new Date().toLocaleString()}\n`;
+                reportBody += "----------------------------------------\n";
+                reportBody += `INCIDENT: ${incidentName}\n\n`;
+
+                const processedFields = new Set();
+                for (const [name, value] of formData.entries()) {
+                    if (processedFields.has(name)) continue;
+
+                    const elements = activeForm.querySelectorAll(`[name="${name}"]`);
+                    if (elements.length > 1 && elements[0].type === 'checkbox') {
+                        const values = formData.getAll(name);
+                        if (values.length > 0) reportBody += `${name}: ${values.join(', ')}\n`;
+                        processedFields.add(name);
+                    } else if (value.trim() !== '') {
+                        reportBody += `${name}: ${value}\n`;
+                    }
+                }
+                
+                generatedReportText = reportBody;
+                
+                reportOutput.textContent = generatedReportText;
+                reportOutputContainer.style.display = 'block';
+                setDispatchButtonsState(true);
+            });
+
+            copyBtn.addEventListener('click', () => {
+                if (!generatedReportText || !navigator.clipboard) return;
+
+                navigator.clipboard.writeText(generatedReportText).then(() => {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Could not copy report to clipboard.');
+                });
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                if (!generatedReportText) return;
+                const incidentNameForFile = (globalIncidentSelector.value || 'Manual_Report').replace(/[^a-z0-9]/gi, '_');
+                const blob = new Blob([generatedReportText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Incident-Report-${incidentNameForFile}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            emailBtn.addEventListener('click', () => {
+                if (!generatedReportText) return;
+                const emailRecipient = "rocgsnar@dfes.wa.gov.au";
+                
+                const incidentTitle = globalIncidentSelector.value;
+                let subject = `Sitrep`; // Fallback subject
+
+                if (incidentTitle) {
+                    const parts = incidentTitle.split(' - ');
+                    if (parts.length >= 3) {
+                        // Assumes format: [Type] - [Location] - [Number]
+                        const incidentType = parts[0].trim();
+                        const location = parts[1].trim();
+                        const incidentNumber = parts[parts.length - 1].trim();
+                        subject = `${incidentNumber}, ${incidentType}, ${location}, Sitrep`;
+                    } else {
+                        // Fallback for titles that don't match the format
+                        subject = `${incidentTitle}, Sitrep`;
+                    }
+                }
+
+                const mailtoLink = `mailto:${emailRecipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(generatedReportText)}`;
+                window.open(mailtoLink, '_blank');
+            });
+
+            smsBtn.addEventListener('click', () => {
+                if (!generatedReportText) return;
+                const smsRecipient = prompt("Enter recipient's phone number:");
+                if (smsRecipient) {
+                    const smsLink = `sms:${smsRecipient}?&body=${encodeURIComponent(generatedReportText)}`;
+                    window.open(smsLink, '_blank');
+                }
+            });
+
+            // Initial setup
+            fetchAndPopulateIncidents();
+            setInterval(fetchAndPopulateIncidents, 120000); // Refresh every 2 minutes
+            initializeButtonGroups();
+            switchForm(checklistSelector.value);
+        });
+    </script>
+
+</body>
+</html>
