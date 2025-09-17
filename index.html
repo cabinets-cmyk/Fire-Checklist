@@ -555,8 +555,19 @@
             font-size: 0.9rem;
             padding: 0.5rem;
         }
-        #appliance-status-selector.radio-group {
+        #appliance-status-selector.radio-group,
+        #support-status-selector.radio-group,
+        #intel-status-selector.radio-group {
             grid-template-columns: 1fr 1fr;
+        }
+        .location-input-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .location-input-group .full-width-item {
+            grid-column: 1 / -1;
         }
 
         footer {
@@ -722,29 +733,17 @@
                         <div>
                             <label>A: Assistance Required</label>
                             <fieldset class="sub-fieldset">
-                                <legend>Appliance Requests</legend>
+                                <legend>Resources</legend>
                                 <div class="radio-group" id="appliance-status-selector">
                                     <label><input type="radio" name="ApplianceStatus" value="Sufficient" checked> Resources Sufficient</label>
                                     <label><input type="radio" name="ApplianceStatus" value="RequireAdditional"> Require Additional Resources</label>
                                 </div>
-                                <div id="appliance-request-details" class="hidden-input">
+                                <div id="resource-request-details" class="hidden-input">
                                     <div class="appliance-requests-grid">
-                                        <div class="appliance-quantity-group">
-                                            <label><input type="checkbox" class="quantity-checkbox" data-input-id="frs-qty"> FRS</label>
-                                            <input type="number" id="frs-qty" name="FRS Required" min="0" placeholder="Qty" class="hidden-input">
-                                        </div>
-                                        <div class="appliance-quantity-group">
-                                            <label><input type="checkbox" class="quantity-checkbox" data-input-id="heavies-qty"> Heavies</label>
-                                            <input type="number" id="heavies-qty" name="Heavies Required" min="0" placeholder="Qty" class="hidden-input">
-                                        </div>
-                                        <div class="appliance-quantity-group">
-                                            <label><input type="checkbox" class="quantity-checkbox" data-input-id="lights-qty"> Lights</label>
-                                            <input type="number" id="lights-qty" name="Lights Required" min="0" placeholder="Qty" class="hidden-input">
-                                        </div>
-                                        <div class="appliance-quantity-group">
-                                            <label><input type="checkbox" class="quantity-checkbox" data-input-id="bulk-water-qty"> Bulk Water</label>
-                                            <input type="number" id="bulk-water-qty" name="Bulk Water Required" min="0" placeholder="Qty" class="hidden-input">
-                                        </div>
+                                        <div class="appliance-quantity-group"><label><input type="checkbox" class="quantity-checkbox" data-input-id="frs-qty"> FRS</label><input type="number" id="frs-qty" name="FRS Required" min="0" placeholder="Qty" class="hidden-input"></div>
+                                        <div class="appliance-quantity-group"><label><input type="checkbox" class="quantity-checkbox" data-input-id="heavies-qty"> Heavies</label><input type="number" id="heavies-qty" name="Heavies Required" min="0" placeholder="Qty" class="hidden-input"></div>
+                                        <div class="appliance-quantity-group"><label><input type="checkbox" class="quantity-checkbox" data-input-id="lights-qty"> Lights</label><input type="number" id="lights-qty" name="Lights Required" min="0" placeholder="Qty" class="hidden-input"></div>
+                                        <div class="appliance-quantity-group"><label><input type="checkbox" class="quantity-checkbox" data-input-id="bulk-water-qty"> Bulk Water</label><input type="number" id="bulk-water-qty" name="Bulk Water Required" min="0" placeholder="Qty" class="hidden-input"></div>
                                         <div>
                                             <div class="appliance-quantity-group">
                                                 <label><input type="checkbox" class="quantity-checkbox" data-input-id="machinery-qty" data-desc-id="machinery-desc"> Machinery</label>
@@ -760,16 +759,34 @@
                                             <input type="text" id="other-appliance-desc" name="Other Appliance Description" placeholder="Specify Other" class="hidden-input" style="margin-top: 0.5rem;">
                                         </div>
                                     </div>
+                                    <hr class="request-separator">
+                                    <div class="requests-grid" id="bf-resource-requests">
+                                        <!-- Air Support & Asset Protection injected here -->
+                                    </div>
                                 </div>
                             </fieldset>
                             <fieldset class="sub-fieldset">
-                                <legend>Resource & Intel Requests</legend>
-                                <div class="requests-grid" id="bf-resource-requests">
-                                    <!-- Items will be injected by JS -->
+                                <legend>Support</legend>
+                                <div class="radio-group" id="support-status-selector">
+                                    <label><input type="radio" name="SupportStatus" value="NotRequired" checked> No Support Required</label>
+                                    <label><input type="radio" name="SupportStatus" value="Required"> Support Required</label>
                                 </div>
-                                <hr class="request-separator">
-                                <div class="requests-grid" id="bf-intel-requests">
-                                    <!-- Items will be injected by JS -->
+                                <div id="support-request-details" class="hidden-input" style="margin-top: 1rem;">
+                                    <div class="requests-grid" id="bf-support-requests">
+                                        <!-- Support agencies injected here -->
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="sub-fieldset">
+                                <legend>Intel</legend>
+                                <div class="radio-group" id="intel-status-selector">
+                                    <label><input type="radio" name="IntelStatus" value="NotRequired" checked> Intel Not Required</label>
+                                    <label><input type="radio" name="IntelStatus" value="Required"> Intel Required</label>
+                                </div>
+                                <div id="intel-request-details" class="hidden-input" style="margin-top: 1rem;">
+                                    <div class="requests-grid" id="bf-intel-requests">
+                                        <!-- Intel products injected here -->
+                                    </div>
                                 </div>
                             </fieldset>
                             <div style="margin-top: 1rem;">
@@ -784,17 +801,54 @@
                                 <label class="inline-checkbox-label">
                                     <input type="checkbox" id="bf-name-manually-checkbox" class="name-manually-checkbox"> Name Manually
                                 </label>
+                                <div>
+                                    <label for="bf-managed-under">Fire being managed under:</label>
+                                    <select id="bf-managed-under" name="Managed Under">
+                                        <option>Bushfires Act 1954</option>
+                                        <option>Fire Brigades Act 1942</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <input type="text" id="bf-managed-under-other" name="Managed Under Other" placeholder="Specify other" class="hidden-input" style="margin-top: 0.5rem;">
+                                </div>
+                                <div>
+                                    <label>Controlling Agency:</label>
+                                    <div class="checkbox-group" id="bf-controlling-agency-group">
+                                        <label><input type="checkbox" name="Controlling Agency" value="DFES">DFES</label>
+                                        <label><input type="checkbox" name="Controlling Agency" value="DBCA">DBCA</label>
+                                        <div class="lga-input-group">
+                                            <label class="inline-checkbox-label"><input type="checkbox" id="bf-lga-checkbox" name="Controlling Agency" value="LGA">LGA</label>
+                                            <input type="text" id="bf-lga-name" name="LGA Name" class="hidden-input" placeholder="Enter LGA Name">
+                                        </div>
+                                    </div>
+                                </div>
                                 <input type="text" id="bf-command-channel" name="Command Channel" placeholder="Command Channel">
-                                <input type="text" id="bf-control-point" name="Control Point" placeholder="Control Point">
-                                <input type="text" id="bf-incident-controller" name="Incident Controller" placeholder="Incident Controller">
-                                <input type="text" id="bf-operations-officer" name="Operations Officer" placeholder="Operations Officer">
+                                <div>
+                                    <label for="bf-control-point">Control Point</label>
+                                    <div class="location-input-group">
+                                        <input type="text" id="bf-control-point" name="Control Point" placeholder="Control Point" readonly>
+                                        <button type="button" id="bf-cp-location-btn" class="location-btn" style="padding: 0.5rem;">My Location</button>
+                                        <div class="full-width-item">
+                                            <label class="inline-checkbox-label">
+                                                <input type="checkbox" id="bf-cp-manual-checkbox" class="cp-manual-checkbox"> Enter Manually
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <fieldset class="sub-fieldset">
+                                    <legend>Command Structure</legend>
+                                    <div class="form-stack">
+                                        <input type="text" id="bf-incident-controller" name="Incident Controller" placeholder="Incident Controller">
+                                        <input type="text" id="bf-operations-officer" name="Operations Officer" placeholder="Operations Officer">
+                                        <input type="text" id="bf-bflo" name="BFLO" placeholder="Bushfire Liaison Officers (BFLO)">
+                                    </div>
+                                </fieldset>
                             </div>
                         </div>
                         <div>
                             <label>S: Surface Winds & Safety</label>
                             <div class="form-stack">
                                 <input type="text" id="wind-details" name="Wind Direction and Strength" placeholder="Wind Direction and Strength">
-                                <textarea id="safety-concerns" name="Safety Concerns (Red Flag Warnings)" rows="3" placeholder="Safety Concerns (Red Flag Warnings)"></textarea>
+                                <textarea id="safety-concerns" name="Safety Concerns" rows="3" placeholder="Safety Concerns (Red Flag Warnings)"></textarea>
                             </div>
                         </div>
                     </div>
@@ -902,12 +956,18 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend>Brigade Details</legend>
+                    <legend>Report Author</legend>
                     <div class="form-stack">
-                         <label for="bf-report-oic">Report by (OIC)</label>
-                         <input type="text" id="bf-report-oic" name="Report by (OIC)">
-                         <label for="bf-report-brigade">Brigade</label>
-                         <input type="text" id="bf-report-brigade" name="Brigade">
+                         <label for="bf-report-completed-by">Report Completed By</label>
+                         <input type="text" id="bf-report-completed-by" name="Report Completed By">
+                         <div class="radio-group" id="bf-author-role-selector" style="grid-template-columns: 1fr;">
+                            <label><input type="radio" name="ReportAuthorRole" value="is_ic"> I am the IC</label>
+                            <label><input type="radio" name="ReportAuthorRole" value="on_behalf" checked> Completed on behalf of IC</label>
+                         </div>
+                         <div id="bf-ic-author-group" class="form-stack">
+                            <label for="bf-incident-controller-author">Incident Controller</label>
+                            <input type="text" id="bf-incident-controller-author" name="Incident Controller Author">
+                         </div>
                     </div>
                 </fieldset>
             </form>
@@ -1024,12 +1084,22 @@
                             <div class="form-stack">
                                 <fieldset class="sub-fieldset">
                                     <legend>Lines of Hose</legend>
-                                    <div class="form-stack">
-                                        <input type="text" id="sf-lines-6040" name="Lines of 60-40" placeholder="Lines of 60-40">
-                                        <input type="text" id="sf-hose-reels" name="Hose Reels" placeholder="Hose Reels">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" name="Lines of Hose" value="1 Line">1 Line</label>
+                                        <label><input type="checkbox" name="Lines of Hose" value="2 Lines">2 Lines</label>
+                                        <label><input type="checkbox" class="toggle-input-checkbox" data-target="sf-lines-other-input">Other</label>
                                     </div>
+                                    <input type="text" id="sf-lines-other-input" name="Lines of Hose Other" placeholder="Specify number of lines" class="hidden-input">
                                 </fieldset>
-                                <input type="text" id="sf-ba-teams" name="BA Teams" placeholder="BA Teams">
+                                <fieldset class="sub-fieldset">
+                                    <legend>BA Teams</legend>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" name="BA Teams" value="1 Team of BA">1 Team of BA</label>
+                                        <label><input type="checkbox" name="BA Teams" value="2 Teams of BA">2 Teams of BA</label>
+                                        <label><input type="checkbox" class="toggle-input-checkbox" data-target="sf-ba-teams-other-input">Other</label>
+                                    </div>
+                                    <input type="text" id="sf-ba-teams-other-input" name="BA Teams Other" placeholder="Specify number of teams" class="hidden-input">
+                                </fieldset>
                                 <fieldset class="sub-fieldset">
                                     <legend>Actions</legend>
                                     <div class="checkbox-group">
@@ -1048,12 +1118,18 @@
                                 <fieldset class="sub-fieldset">
                                     <legend>Exposures</legend>
                                     <div class="checkbox-group" id="sf-exposures-group">
+                                        <label><input type="checkbox" name="Exposures" value="No Exposures">No Exposures</label>
                                         <label><input type="checkbox" name="Exposures" value="Exposure">Exposure</label>
                                         <label><input type="checkbox" name="Exposures" value="Multiple Exposures">Multiple Exposures</label>
                                     </div>
                                     <input type="text" id="sf-exposures-location-input" name="Location of Exposures" placeholder="Specify location(s) of exposures" class="hidden-input">
                                 </fieldset>
-                                <input type="text" id="sf-evacuations" name="Evacuations" placeholder="Evacuations">
+                                <div>
+                                    <label class="inline-checkbox-label">
+                                        <input type="checkbox" id="sf-evacuation-checkbox" class="toggle-input-checkbox" data-target="sf-evacuations-input"> Evacuation in Progress/Required
+                                    </label>
+                                    <input type="text" id="sf-evacuations-input" name="Evacuations" placeholder="Evacuation details..." class="hidden-input" style="margin-top: 0.5rem;">
+                                </div>
                                 <div class="radio-group" id="life-involvement-group">
                                     <label class="life-status-label status-red"><input type="radio" name="Life Involvement" value="Life Involvement Confirmed">Life Involvement Confirmed</label>
                                     <label class="life-status-label status-orange"><input type="radio" name="Life Involvement" value="Life Involvement not confirmed">Life Involvement not confirmed</label>
@@ -1074,6 +1150,12 @@
                             <fieldset class="sub-fieldset">
                                 <legend>Required</legend>
                                 <div class="checkbox-group">
+                                    <div class="appliance-quantity-group">
+                                        <label><input type="checkbox" class="quantity-checkbox" data-input-id="sf-add-pump-qty"> Additional Pump</label>
+                                        <input type="number" id="sf-add-pump-qty" name="Additional Pump Qty" min="0" placeholder="Qty" class="hidden-input">
+                                    </div>
+                                    <label><input type="checkbox" name="Resources Required" value="SET/BA Support">SET/BA Support</label>
+                                    <label><input type="checkbox" name="Resources Required" value="CLP/Aerial Platform">CLP/Aerial Platform</label>
                                     <label><input type="checkbox" name="Resources Required" value="DFES Officer">DFES Officer</label>
                                     <label><input type="checkbox" name="Resources Required" value="WAPOL">WAPOL</label>
                                     <label><input type="checkbox" name="Resources Required" value="Western Power">Western Power</label>
@@ -1105,9 +1187,29 @@
                                 <label class="inline-checkbox-label">
                                     <input type="checkbox" id="sf-name-manually-checkbox" class="name-manually-checkbox"> Name Manually
                                 </label>
-                                <input type="text" id="sf-command-channel" name="Command Channel" placeholder="Command Channel">
-                                <input type="text" id="sf-control-point" name="Control Point" placeholder="Control Point">
-                                <input type="text" id="sf-incident-controller" name="Incident Controller" placeholder="Incident Controller">
+                                <div>
+                                    <label>Command Channel</label>
+                                    <div class="checkbox-group" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
+                                        <label><input type="checkbox" name="Command Channel" value="CMD1"> CMD1</label>
+                                        <label><input type="checkbox" name="Command Channel" value="CMD2"> CMD2</label>
+                                        <label><input type="checkbox" name="Command Channel" value="BA A"> BA A</label>
+                                        <label><input type="checkbox" class="toggle-input-checkbox" data-target="sf-cmd-channel-other"> Other</label>
+                                    </div>
+                                    <input type="text" id="sf-cmd-channel-other" name="Command Channel Other" class="hidden-input" placeholder="Specify other channel" style="margin-top: 0.5rem;">
+                                </div>
+                                <div>
+                                    <label for="sf-control-point">Control Point</label>
+                                    <div class="location-input-group">
+                                        <input type="text" id="sf-control-point" name="Control Point" placeholder="Control Point" readonly>
+                                        <button type="button" id="sf-cp-location-btn" class="location-btn" style="padding: 0.5rem;">My Location</button>
+                                        <div class="full-width-item">
+                                            <label class="inline-checkbox-label">
+                                                <input type="checkbox" id="sf-cp-manual-checkbox" class="cp-manual-checkbox"> Enter Manually
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" id="sf-incident-controller" name="Incident Controller Main" placeholder="Incident Controller">
                                 <input type="text" id="sf-operations-officer" name="Operations Officer" placeholder="Operations Officer">
                             </div>
                         </div>
@@ -1138,12 +1240,18 @@
                     </div>
                 </fieldset>
                 <fieldset>
-                    <legend>Brigade Details</legend>
+                    <legend>Report Author</legend>
                     <div class="form-stack">
-                         <label for="sf-report-oic">Report by (OIC)</label>
-                         <input type="text" id="sf-report-oic" name="Report by (OIC)">
-                         <label for="sf-report-brigade">Brigade</label>
-                         <input type="text" id="sf-report-brigade" name="Brigade">
+                         <label for="sf-report-completed-by">Report Completed By</label>
+                         <input type="text" id="sf-report-completed-by" name="Report Completed By">
+                         <div class="radio-group" id="sf-author-role-selector" style="grid-template-columns: 1fr;">
+                            <label><input type="radio" name="ReportAuthorRole" value="is_ic"> I am the IC</label>
+                            <label><input type="radio" name="ReportAuthorRole" value="on_behalf" checked> Completed on behalf of IC</label>
+                         </div>
+                         <div id="sf-ic-author-group" class="form-stack">
+                             <label for="sf-incident-controller-author">Incident Controller</label>
+                             <input type="text" id="sf-incident-controller-author" name="Incident Controller">
+                         </div>
                     </div>
                 </fieldset>
             </form>
@@ -1282,16 +1390,22 @@
                                 <input type="text" id="rcr-res-req-other-input" name="RCR Resources Required Other" placeholder="Specify other resource" class="hidden-input">
                             </fieldset>
                         </div>
-                        <div><label for="rc-time">Estimated Time on Scene</label><input type="text" id="rc-time" name="Estimated Time"></div>
+                        <div><label for="rcr-time">Estimated Time on Scene</label><input type="text" id="rcr-time" name="Estimated Time"></div>
                     </div>
                 </fieldset>
                 <fieldset>
-                    <legend>Brigade Details</legend>
+                    <legend>Report Author</legend>
                     <div class="form-stack">
-                         <label for="rc-report-oic">Report by (OIC)</label>
-                         <input type="text" id="rc-report-oic" name="Report by (OIC)">
-                         <label for="rc-report-brigade">Brigade</label>
-                         <input type="text" id="rc-report-brigade" name="Brigade">
+                         <label for="rcr-report-completed-by">Report Completed By</label>
+                         <input type="text" id="rcr-report-completed-by" name="Report Completed By">
+                         <div class="radio-group" id="rcr-author-role-selector" style="grid-template-columns: 1fr;">
+                            <label><input type="radio" name="ReportAuthorRole" value="is_ic"> I am the IC</label>
+                            <label><input type="radio" name="ReportAuthorRole" value="on_behalf" checked> Completed on behalf of IC</label>
+                         </div>
+                         <div id="rcr-ic-author-group" class="form-stack">
+                             <label for="rcr-incident-controller-author">Incident Controller</label>
+                             <input type="text" id="rcr-incident-controller-author" name="Incident Controller">
+                         </div>
                     </div>
                 </fieldset>
             </form>
@@ -1531,12 +1645,18 @@
                     </div>
                 </fieldset>
                 <fieldset>
-                    <legend>Brigade Details</legend>
+                    <legend>Report Author</legend>
                     <div class="form-stack">
-                         <label for="hm-report-oic">Report by (OIC)</label>
-                         <input type="text" id="hm-report-oic" name="Report by (OIC)">
-                         <label for="hm-report-brigade">Brigade</label>
-                         <input type="text" id="hm-report-brigade" name="Brigade">
+                         <label for="hm-report-completed-by">Report Completed By</label>
+                         <input type="text" id="hm-report-completed-by" name="Report Completed By">
+                         <div class="radio-group" id="hm-author-role-selector" style="grid-template-columns: 1fr;">
+                            <label><input type="radio" name="ReportAuthorRole" value="is_ic"> I am the IC</label>
+                            <label><input type="radio" name="ReportAuthorRole" value="on_behalf" checked> Completed on behalf of IC</label>
+                         </div>
+                         <div id="hm-ic-author-group" class="form-stack">
+                             <label for="hm-incident-controller-author">Incident Controller</label>
+                             <input type="text" id="hm-incident-controller-author" name="Incident Controller">
+                         </div>
                     </div>
                 </fieldset>
             </form>
@@ -1586,7 +1706,18 @@
                             </div>
                         </div>
                         <input type="text" id="ob-command-channel" name="Command Channel" placeholder="Command Channel">
-                        <input type="text" id="ob-control-point" name="Control Point" placeholder="Control Point">
+                        <div>
+                            <label for="ob-control-point">Control Point</label>
+                            <div class="location-input-group">
+                                <input type="text" id="ob-control-point" name="Control Point" placeholder="Control Point" readonly>
+                                <button type="button" id="ob-cp-location-btn" class="location-btn" style="padding: 0.5rem;">My Location</button>
+                                <div class="full-width-item">
+                                    <label class="inline-checkbox-label">
+                                        <input type="checkbox" id="ob-cp-manual-checkbox" class="cp-manual-checkbox"> Enter Manually
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div>
                             <label for="ob-fire-size">Fire Size (ha)</label>
                             <input type="number" id="ob-fire-size" name="Fire Size (ha)">
@@ -1805,12 +1936,10 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend>Brigade Details</legend>
+                    <legend>Report Author</legend>
                     <div class="form-stack">
-                         <label for="ob-report-oic">Report by (OIC)</label>
-                         <input type="text" id="ob-report-oic" name="Report by (OIC)">
-                         <label for="ob-report-brigade">Brigade</label>
-                         <input type="text" id="ob-report-brigade" name="Brigade">
+                         <label for="ob-report-by">Report by</label>
+                         <input type="text" id="ob-report-by" name="Report by">
                     </div>
                 </fieldset>
             </form>
@@ -1890,12 +2019,31 @@
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;
                     latEl.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-                    reverseGeocode(latitude, longitude, addressEl);
+                    if (addressEl) {
+                        reverseGeocode(latitude, longitude, addressEl);
+                    }
                 }
                 function error() { alert('Unable to retrieve your location.'); }
                 latEl.value = 'Getting location...';
-                addressEl.value = '';
+                if (addressEl) addressEl.value = '';
                 navigator.geolocation.getCurrentPosition(success, error);
+            }
+            
+            function getCoordsForInput(targetInput) {
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser.');
+                    return;
+                }
+                targetInput.value = 'Getting location...';
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        targetInput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                    },
+                    () => {
+                        targetInput.value = 'Unable to retrieve location.';
+                    }
+                );
             }
 
             document.getElementById('bf-get-location-btn').addEventListener('click', () => getLocation(document.getElementById('bf-lat-long'), document.getElementById('bf-street-address')));
@@ -1963,7 +2111,80 @@
                 }
             }
 
+            function initializeAuthorSection(prefix) {
+                const completedByInput = document.getElementById(`${prefix}-report-completed-by`);
+                const icAuthorGroup = document.getElementById(`${prefix}-ic-author-group`);
+                const icAuthorInput = document.getElementById(`${prefix}-incident-controller-author`);
+                const roleSelector = document.getElementById(`${prefix}-author-role-selector`);
+                const mainIcInput = document.getElementById(`${prefix}-incident-controller`) || document.getElementById('sf-incident-controller');
+
+                if (!completedByInput || !roleSelector) return;
+
+                const handleRoleChange = () => {
+                    const isBehalf = roleSelector.querySelector('input[value="on_behalf"]').checked;
+                    if (icAuthorGroup) icAuthorGroup.classList.toggle('hidden-input', !isBehalf);
+                    
+                    if (mainIcInput && prefix !== 'ob') { // Exclude ongoing bushfire from this specific logic
+                        if (isBehalf) {
+                            mainIcInput.readOnly = false;
+                            if (icAuthorInput) icAuthorInput.value = mainIcInput.value;
+                        } else { // Is the IC
+                            mainIcInput.value = completedByInput.value;
+                            mainIcInput.readOnly = true;
+                            if (icAuthorInput) icAuthorInput.value = '';
+                        }
+                    }
+                };
+
+                roleSelector.addEventListener('change', handleRoleChange);
+                
+                completedByInput.addEventListener('input', () => {
+                    const isIC = roleSelector.querySelector('input[value="is_ic"]').checked;
+                    if (isIC && mainIcInput) {
+                        mainIcInput.value = completedByInput.value;
+                    }
+                });
+
+                if (mainIcInput) {
+                    mainIcInput.addEventListener('input', () => {
+                        const isBehalf = roleSelector.querySelector('input[value="on_behalf"]').checked;
+                        if (isBehalf && icAuthorInput) {
+                            icAuthorInput.value = mainIcInput.value;
+                        }
+                    });
+                }
+
+                handleRoleChange(); // Initial state
+            }
+
+            function initializeControlPoint(prefix) {
+                const cpInput = document.getElementById(`${prefix}-control-point`);
+                const cpLocationBtn = document.getElementById(`${prefix}-cp-location-btn`);
+                const cpManualCheckbox = document.getElementById(`${prefix}-cp-manual-checkbox`);
+
+                if (!cpInput || !cpLocationBtn || !cpManualCheckbox) return;
+
+                cpLocationBtn.addEventListener('click', () => getCoordsForInput(cpInput));
+
+                cpManualCheckbox.addEventListener('change', (e) => {
+                    const isManual = e.target.checked;
+                    cpInput.readOnly = !isManual;
+                    cpLocationBtn.disabled = isManual;
+                    if (isManual) {
+                        cpInput.value = '';
+                        cpInput.focus();
+                    } else {
+                        cpInput.value = ''; // Clear it when switching back to auto
+                    }
+                });
+            }
+
             function initializeInteractiveInputs() {
+                ['bf', 'sf', 'rcr', 'hm', 'ob'].forEach(prefix => {
+                    initializeAuthorSection(prefix);
+                    initializeControlPoint(prefix);
+                });
+
                 document.querySelectorAll('.toggle-input-checkbox').forEach(checkbox => {
                     checkbox.addEventListener('change', (e) => {
                         const targetId = e.target.dataset.target;
@@ -1996,7 +2217,7 @@
                 const applianceStatusSelector = document.getElementById('appliance-status-selector');
                 if (applianceStatusSelector) {
                     applianceStatusSelector.addEventListener('change', e => {
-                        const detailsContainer = document.getElementById('appliance-request-details');
+                        const detailsContainer = document.getElementById('resource-request-details');
                         detailsContainer.classList.toggle('hidden-input', e.target.value !== 'RequireAdditional');
                         if (e.target.value !== 'RequireAdditional') {
                             detailsContainer.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => input.value = '');
@@ -2008,6 +2229,22 @@
                                 if (descInput) descInput.classList.add('hidden-input');
                             });
                         }
+                    });
+                }
+
+                const supportStatusSelector = document.getElementById('support-status-selector');
+                if (supportStatusSelector) {
+                    supportStatusSelector.addEventListener('change', e => {
+                        const detailsContainer = document.getElementById('support-request-details');
+                        detailsContainer.classList.toggle('hidden-input', e.target.value !== 'Required');
+                    });
+                }
+
+                const intelStatusSelector = document.getElementById('intel-status-selector');
+                if (intelStatusSelector) {
+                    intelStatusSelector.addEventListener('change', e => {
+                        const detailsContainer = document.getElementById('intel-request-details');
+                        detailsContainer.classList.toggle('hidden-input', e.target.value !== 'Required');
                     });
                 }
 
@@ -2033,6 +2270,17 @@
 
                     m1.addEventListener('input', calculateSqM);
                     m2.addEventListener('input', calculateSqM);
+                }
+
+                const managedUnderSelect = document.getElementById('bf-managed-under');
+                const managedUnderOtherInput = document.getElementById('bf-managed-under-other');
+                if (managedUnderSelect) {
+                    managedUnderSelect.addEventListener('change', e => {
+                        managedUnderOtherInput.classList.toggle('hidden-input', e.target.value !== 'Other');
+                        if (e.target.value !== 'Other') {
+                            managedUnderOtherInput.value = '';
+                        }
+                    });
                 }
 
                 document.querySelectorAll('.name-manually-checkbox').forEach(checkbox => {
@@ -2061,6 +2309,15 @@
                         if (isManual && latLongInput) latLongInput.focus();
                     });
                 });
+
+                const bfLgaCheckbox = document.getElementById('bf-lga-checkbox');
+                const bfLgaName = document.getElementById('bf-lga-name');
+                if (bfLgaCheckbox && bfLgaName) {
+                    bfLgaCheckbox.addEventListener('change', e => {
+                        bfLgaName.classList.toggle('hidden-input', !e.target.checked);
+                        if (!e.target.checked) bfLgaName.value = '';
+                    });
+                }
 
                 const lifeInvolvementGroup = document.getElementById('life-involvement-group');
                 if (lifeInvolvementGroup) {
@@ -2300,30 +2557,34 @@
 
             function initializeBushfireRequests() {
                 const resourceContainer = document.getElementById('bf-resource-requests');
+                const supportContainer = document.getElementById('bf-support-requests');
                 const intelContainer = document.getElementById('bf-intel-requests');
                 
                 const resourceItems = [
                     { id: 'AirSupport', label: 'Air Support' },
+                    { id: 'AssetProtect', label: 'Asset Protection' }
+                ];
+                const supportItems = [
                     { id: 'DFESOfficer', label: 'DFES Officer' },
                     { id: 'IMTSupport', label: 'IMT Support' },
-                    { id: 'AssetProtect', label: 'Asset Protection' },
                     { id: 'WAPOL', label: 'WAPOL' },
                     { id: 'SJA', label: 'SJA' },
-                    { id: 'LGA', label: 'LGA' },
                     { id: 'MainRoads', label: 'Main Roads' },
-                    { id: 'TrafficManagement', label: 'Traffic Management' }
+                    { id: 'TrafficManagement', label: 'Traffic Management' },
+                    { id: 'LGA', label: 'LGA' }
                 ];
-                const resourceStatuses = ['Not Required', 'Require', 'Already been Requested', 'On Scene'];
+                const resourceAndSupportStatuses = ['Not Required', 'Require', 'Already been Requested', 'On Scene'];
 
                 const intelItems = [
-                    { id: 'Weather', label: 'Incident Weather Forecast' },
+                    { id: 'Weather', label: 'Incident Weather Forecast (IWF)' },
                     { id: 'Predictions', label: 'Predictions' },
-                    { id: 'CIS', label: 'Critical Infrastructure Report (CIS)' },
-                    { id: 'DPLH', label: 'DPLH (ACH) Report' }
+                    { id: 'CIS', label: 'Critical Infrastructure (CI) Report' },
+                    { id: 'DPLH', label: 'ACH Report' }
                 ];
                 const intelStatuses = ['Not Required', 'Require', 'Already been Requested'];
 
-                resourceItems.forEach(item => createRequestItem(item.id, item.label, resourceStatuses, resourceContainer));
+                resourceItems.forEach(item => createRequestItem(item.id, item.label, resourceAndSupportStatuses, resourceContainer));
+                supportItems.forEach(item => createRequestItem(item.id, item.label, resourceAndSupportStatuses, supportContainer));
                 intelItems.forEach(item => createRequestItem(item.id, item.label, intelStatuses, intelContainer));
             }
 
@@ -2403,6 +2664,29 @@
                 return { number: incidentNumber, type: incidentType, location: incidentLocation };
             }
 
+            function transformHazmatText(text) {
+                const verbMap = {
+                    'Approach': 'Approached', 'Assess': 'Assessed', 'Effect': 'Effected',
+                    'Consider': 'Considered', 'Establish': 'Established', 'Determine': 'Determined',
+                    'Identify': 'Identified', 'Record': 'Recorded', 'Use': 'Used',
+                    'Complete': 'Completed', 'Transmit': 'Transmitted', 'Receive': 'Received',
+                    'Re-assess': 'Re-assessed', 'Initiate': 'Initiated', 'Obtain': 'Obtained',
+                    'Maintain': 'Maintained', 'Consult': 'Consulted', 'Recover': 'Recovered',
+                    'Liaise': 'Liaised', 'Seek': 'Sought'
+                };
+                if (text.startsWith('DO NOT enter')) {
+                    return text.replace('DO NOT enter', 'Did not enter');
+                }
+                if (text.startsWith('Full decontamination procedures are to be followed')) {
+                    return text.replace('are to be followed', 'were followed');
+                }
+                const firstWord = text.split(' ')[0];
+                if (verbMap[firstWord]) {
+                    return text.replace(firstWord, verbMap[firstWord]);
+                }
+                return text;
+            }
+
             globalIncidentSelector.addEventListener('change', (e) => {
                 const selectedTitle = e.target.value;
                 if (!selectedTitle) {
@@ -2440,20 +2724,37 @@
                 const activeForm = document.querySelector('.checklist-form.active');
                 if (!activeForm) return;
                 const formData = new FormData(activeForm);
-                const oic = formData.get('Report by (OIC)') || 'N/A';
-                const brigade = formData.get('Brigade') || 'N/A';
+
+                let authorLine = '';
+                const authorRole = formData.get('ReportAuthorRole');
+                
+                if (authorRole) {
+                    const completedBy = formData.get('Report Completed By') || 'N/A';
+                    if (authorRole === 'is_ic') {
+                        authorLine = `Report by: ${completedBy} (IC)\n`;
+                    } else if (authorRole === 'on_behalf') {
+                        const icName = formData.get('Incident Controller Author') || formData.get('Incident Controller Main') || '[IC Name Not Entered]';
+                        authorLine = `Report completed by ${completedBy} on behalf of IC ${icName}\n`;
+                    }
+                } else { // Fallback for Ongoing Bushfire form
+                    const author = formData.get('Report by') || 'N/A';
+                    authorLine = `Report by: ${author}\n`;
+                }
+
                 let reportBody = `INCIDENT REPORT - ${checklistSelector.options[checklistSelector.selectedIndex].text.toUpperCase()}\n`;
                 reportBody += `Report Time: ${new Date().toLocaleString()}\n`;
-                reportBody += `Report by (OIC): ${oic}\n`;
-                reportBody += `Brigade: ${brigade}\n`;
+                reportBody += authorLine;
                 reportBody += "----------------------------------------\n";
+
                 if (activeForm.id !== 'ongoing-bushfire-form') {
                     reportBody += `INCIDENT: ${incidentDetails.name}\n`;
                     const arrivalCode = formData.get('Arrival Code');
                     if (arrivalCode) reportBody += `Arrival Code: ${arrivalCode}\n`;
                     const classification = formData.get('Classification');
-                    if (classification) reportBody += `Classification: ${classification}\n`;
+                    if (classification) reportBody += `Incident Classification: ${classification}\n`;
                 }
+
+                // --- BUSHFIRE ---
                 if (activeForm.id === 'bushfire-form') {
                     reportBody += "\n--- PAFTACS ---\n";
                     reportBody += `P - Position:\n`;
@@ -2466,10 +2767,11 @@
                     const propertyThreatened = formData.getAll('Property Threatened').join(', ');
                     if (propertyThreatened) reportBody += `    Property Threatened: ${propertyThreatened}\n`;
                     
+                    reportBody += `\nA - Area Involved:\n`;
                     const areaUnit = formData.get('AreaUnit');
                     if (areaUnit === 'hectares') {
                         const areaHa = formData.get('Area (ha)');
-                        if (areaHa) reportBody += `A - Area Involved: ${areaHa} ha\n`;
+                        if (areaHa) reportBody += `    ${areaHa} ha\n`;
                     } else if (areaUnit === 'metres') {
                         const m1 = formData.get('Area Metres 1');
                         const m2 = formData.get('Area Metres 2');
@@ -2482,81 +2784,117 @@
                             } else {
                                 areaDisplay = `${totalSqM.toLocaleString()} m²`;
                             }
-                            reportBody += `A - Area Involved: ${m1}m x ${m2}m (${areaDisplay})\n`;
+                            reportBody += `    ${m1}m x ${m2}m (${areaDisplay})\n`;
                         }
                     }
 
+                    reportBody += `\nF - Fuel:\n`;
                     const fuelLoad = formData.get('Fuel Load');
                     const fuelType = formData.get('Fuel Type');
                     const fireIntensity = formData.get('Fire Intensity');
-                    reportBody += `F - Fuel: ${fuelLoad}, ${fuelType}, ${fireIntensity}\n`;
+                    reportBody += `    ${fuelLoad}, ${fuelType}, ${fireIntensity}\n`;
+                    
                     const time = formData.get('Time to Control');
-                    if(time) reportBody += `T - Time to Control: ${time}\n`;
+                    if(time) reportBody += `\nT - Time to Control:\n    ${time}\n`;
                     
                     let assistanceBody = '';
-                    const applianceStatus = formData.get('ApplianceStatus');
-                    if (applianceStatus === 'Sufficient') {
-                        assistanceBody += '    Appliance Status: Resources Sufficient\n';
-                    } else if (applianceStatus === 'RequireAdditional') {
+                    const reportLabelMap = {
+                        'AirSupport': 'Air Support', 'AssetProtect': 'Asset Protection',
+                        'DFESOfficer': 'DFES Officer', 'IMTSupport': 'IMT Support', 'WAPOL': 'WAPOL',
+                        'SJA': 'SJA', 'MainRoads': 'Main Roads', 'TrafficManagement': 'Traffic Management', 'LGA': 'LGA',
+                        'Weather': 'IWF', 'Predictions': 'Predictions', 'CIS': 'CI Report', 'DPLH': 'ACH Report'
+                    };
+                    
+                    let resourceBody = '';
+                    if (formData.get('ApplianceStatus') === 'RequireAdditional') {
                         let applianceStr = '';
                         const applianceRequests = {
-                            "FRS": formData.get('FRS Required'),
-                            "Heavies": formData.get('Heavies Required'),
-                            "Lights": formData.get('Lights Required'),
-                            "Bulk Water": formData.get('Bulk Water Required'),
+                            "FRS": formData.get('FRS Required'), "Heavies": formData.get('Heavies Required'),
+                            "Lights": formData.get('Lights Required'), "Bulk Water": formData.get('Bulk Water Required'),
                         };
                         for (const [key, value] of Object.entries(applianceRequests)) {
                             if (value) applianceStr += `${key}: ${value}, `;
                         }
-                        
                         const machineryQty = formData.get('Machinery Required');
                         if (machineryQty) {
                             const machineryDesc = formData.get('Machinery Description');
                             applianceStr += `Machinery: ${machineryQty}${machineryDesc ? ` (${machineryDesc})` : ''}, `;
                         }
-
                         const otherQty = formData.get('Other Appliance Required');
                         if (otherQty) {
                             const otherDesc = formData.get('Other Appliance Description');
                             applianceStr += `Other: ${otherQty}${otherDesc ? ` (${otherDesc})` : ''}, `;
                         }
-
                         if (applianceStr) {
-                            assistanceBody += `    Additional Appliance Required: ${applianceStr.slice(0, -2)}\n`;
-                        } else {
-                            assistanceBody += `    Appliance Status: Require Additional Resources (no quantities specified)\n`;
+                            resourceBody += `    Additional Appliance Required: ${applianceStr.slice(0, -2)}\n`;
                         }
-                    }
-
-                    let requestsStr = '';
-                    const requestItems = activeForm.querySelectorAll('.request-item');
-                    requestItems.forEach(item => {
-                        const label = item.querySelector('.request-item-label').textContent;
-                        const name = item.querySelector('.radio-group input').name;
-                        const statusValue = formData.get(name);
                         
-                        if (statusValue && statusValue.toLowerCase() !== 'notrequired') {
-                            let statusText = statusValue.replace(/([A-Z])/g, ' $1').trim();
-                            let viaText = '';
-                            if (statusValue === 'AlreadybeenRequested') {
-                                statusText = 'Already been Requested';
-                                const viaName = `${name}-via`;
-                                const viaValues = formData.getAll(viaName);
-                                const otherVia = formData.get(`${name}-via-other`);
-                                if (otherVia) {
-                                    const otherIndex = viaValues.indexOf('on'); // 'on' is value for checkbox
-                                    if(otherIndex > -1) viaValues.splice(otherIndex, 1, `Other: ${otherVia}`);
+                        ['AirSupport', 'AssetProtect'].forEach(id => {
+                            const statusValue = formData.get(`Request-${id}`);
+                            if (statusValue && statusValue.toLowerCase() !== 'notrequired') {
+                                let statusText = statusValue.replace(/([A-Z])/g, ' $1').trim();
+                                let viaText = '';
+                                if (statusValue === 'AlreadybeenRequested') {
+                                    statusText = 'Already been Requested';
+                                    const viaValues = formData.getAll(`Request-${id}-via`);
+                                    const otherVia = formData.get(`Request-${id}-via-other`);
+                                    if (otherVia) {
+                                        const otherIndex = viaValues.indexOf('on');
+                                        if(otherIndex > -1) viaValues.splice(otherIndex, 1, `Other: ${otherVia}`);
+                                    }
+                                    if (viaValues.length > 0) viaText = ` (via ${viaValues.join(', ')})`;
                                 }
-                                if (viaValues.length > 0) {
-                                    viaText = ` (via ${viaValues.join(', ')})`;
-                                }
+                                resourceBody += `    - ${reportLabelMap[id]}: ${statusText}${viaText}\n`;
                             }
-                            requestsStr += `    - ${label}: ${statusText}${viaText}\n`;
-                        }
-                    });
-                    if(requestsStr) {
-                        assistanceBody += requestsStr;
+                        });
                     }
+                    if(resourceBody) assistanceBody += '    --- Resources ---\n' + resourceBody;
+
+                    let supportBody = '';
+                    if (formData.get('SupportStatus') === 'Required') {
+                        ['DFESOfficer', 'IMTSupport', 'WAPOL', 'SJA', 'MainRoads', 'TrafficManagement', 'LGA'].forEach(id => {
+                            const statusValue = formData.get(`Request-${id}`);
+                            if (statusValue && statusValue.toLowerCase() !== 'notrequired') {
+                                let statusText = statusValue.replace(/([A-Z])/g, ' $1').trim();
+                                let viaText = '';
+                                if (statusValue === 'AlreadybeenRequested') {
+                                    statusText = 'Already been Requested';
+                                    const viaValues = formData.getAll(`Request-${id}-via`);
+                                    const otherVia = formData.get(`Request-${id}-via-other`);
+                                    if (otherVia) {
+                                        const otherIndex = viaValues.indexOf('on');
+                                        if(otherIndex > -1) viaValues.splice(otherIndex, 1, `Other: ${otherVia}`);
+                                    }
+                                    if (viaValues.length > 0) viaText = ` (via ${viaValues.join(', ')})`;
+                                }
+                                supportBody += `    - ${reportLabelMap[id]}: ${statusText}${viaText}\n`;
+                            }
+                        });
+                    }
+                    if(supportBody) assistanceBody += '    --- Support ---\n' + supportBody;
+
+                    let intelBody = '';
+                    if (formData.get('IntelStatus') === 'Required') {
+                        ['Weather', 'Predictions', 'CIS', 'DPLH'].forEach(id => {
+                            const statusValue = formData.get(`Request-${id}`);
+                            if (statusValue && statusValue.toLowerCase() !== 'notrequired') {
+                                let statusText = statusValue.replace(/([A-Z])/g, ' $1').trim();
+                                let viaText = '';
+                                if (statusValue === 'AlreadybeenRequested') {
+                                    statusText = 'Already been Requested';
+                                    const viaValues = formData.getAll(`Request-${id}-via`);
+                                    const otherVia = formData.get(`Request-${id}-via-other`);
+                                    if (otherVia) {
+                                        const otherIndex = viaValues.indexOf('on');
+                                        if(otherIndex > -1) viaValues.splice(otherIndex, 1, `Other: ${otherVia}`);
+                                    }
+                                    if (viaValues.length > 0) viaText = ` (via ${viaValues.join(', ')})`;
+                                }
+                                intelBody += `    - ${reportLabelMap[id]}: ${statusText}${viaText}\n`;
+                            }
+                        });
+                    }
+                    if(intelBody) assistanceBody += '    --- Intel ---\n' + intelBody;
 
                     const additionalDetails = formData.get('Additional Resource Details');
                     if (additionalDetails) {
@@ -2564,25 +2902,49 @@
                     }
 
                     if (assistanceBody) {
-                        reportBody += `A - Assistance Required:\n${assistanceBody}`;
+                        reportBody += `\nA - Assistance Required:\n${assistanceBody}`;
                     }
 
-                    reportBody += `C - Comms & Control:\n`;
+                    reportBody += `\nC - Comms & Control:\n`;
                     const incidentName = formData.get('Incident Name');
                     if(incidentName) reportBody += `    Incident Name: ${incidentName}\n`;
+                    
+                    let managedUnder = formData.get('Managed Under');
+                    if (managedUnder === 'Other') {
+                        const otherText = formData.get('Managed Under Other');
+                        managedUnder = otherText ? `Other: ${otherText}` : 'Other';
+                    }
+                    if (managedUnder) reportBody += `    Fire being managed under: ${managedUnder}\n`;
+
+                    let agencies = formData.getAll('Controlling Agency');
+                    const lgaName = formData.get('LGA Name');
+                    if (lgaName) {
+                        const lgaIndex = agencies.indexOf('LGA');
+                        if (lgaIndex > -1) agencies[lgaIndex] = `LGA - ${lgaName}`;
+                    }
+                    if (agencies.length > 0) reportBody += `    Controlling Agency: ${agencies.join(', ')}\n`;
+
                     const commandChannel = formData.get('Command Channel');
                     if(commandChannel) reportBody += `    Command Channel: ${commandChannel}\n`;
                     const controlPoint = formData.get('Control Point');
                     if(controlPoint) reportBody += `    Control Point: ${controlPoint}\n`;
+                    
                     const ic = formData.get('Incident Controller');
-                    if(ic) reportBody += `    IC: ${ic}\n`;
                     const ops = formData.get('Operations Officer');
-                    if(ops) reportBody += `    Ops: ${ops}\n`;
-                    reportBody += `S - Safety:\n`;
+                    const bflo = formData.get('BFLO');
+                    if (ic || ops || bflo) {
+                        reportBody += `    --- Command Structure ---\n`;
+                        if(ic) reportBody += `        IC: ${ic}\n`;
+                        if(ops) reportBody += `        OO: ${ops}\n`;
+                        if(bflo) reportBody += `        BFLO: ${bflo}\n`;
+                    }
+
+                    reportBody += `\nS - Safety:\n`;
                     const wind = formData.get('Wind Direction and Strength');
                     if(wind) reportBody += `    Wind: ${wind}\n`;
-                    const safety = formData.get('Safety Concerns (Red Flag Warnings)');
-                    if(safety) reportBody += `    Concerns: ${safety}\n`;
+                    const safety = formData.get('Safety Concerns');
+                    if(safety) reportBody += `    Safety Concerns: ${safety}\n`;
+                    
                     reportBody += "\n--- PUBLIC INFORMATION ---\n";
                     for (let i = 1; i <= 3; i++) {
                         const warningContainer = document.getElementById(`bf-warning-${i}-container`);
@@ -2608,11 +2970,141 @@
                              reportBody += `Warning Type: ${warning}\n`;
                         }
                     }
-                } else if (activeForm.id === 'structure-fire-form' || activeForm.id === 'hazmat-form') {
-                    // Common logic for SF and Hazmat can go here if needed
-                } else if (activeForm.id === 'ongoing-bushfire-form') {
+                } 
+                // --- STRUCTURE FIRE ---
+                else if (activeForm.id === 'structure-fire-form') {
+                    reportBody += "--- HAULER REPORT ---\n";
+                    const height = formData.getAll('Height').join(', ') + (formData.get('Height Specify') ? `, ${formData.get('Height Specify')}` : '');
+                    if (height) reportBody += `H - Height:\n    ${height}\n`;
+                    
+                    const areaDim1 = formData.get('Area Dim 1');
+                    const areaDim2 = formData.get('Area Dim 2');
+                    if(areaDim1 || areaDim2) reportBody += `A - Area/Size:\n    ${areaDim1 || 'N/A'} x ${areaDim2 || 'N/A'}\n`;
+
+                    let use = formData.getAll('Use').join(', ') + (formData.get('Use Other') ? `, ${formData.get('Use Other')}` : '');
+                    let walls = formData.getAll('Walls').join(', ') + (formData.get('Walls Other') ? `, ${formData.get('Walls Other')}` : '');
+                    let roof = formData.getAll('Roof').join(', ') + (formData.get('Roof Other') ? `, ${formData.get('Roof Other')}` : '');
+                    let asbestos = formData.getAll('Asbestos').join(', ');
+                    if(use || walls || roof || asbestos) reportBody += `U - Use/Construction:\n`;
+                    if(use) reportBody += `    Use: ${use}\n`;
+                    if(walls) reportBody += `    Walls: ${walls}\n`;
+                    if(roof) reportBody += `    Roof: ${roof}\n`;
+                    if(asbestos) reportBody += `    Asbestos: ${asbestos}\n`;
+
+                    let linesOfHose = formData.getAll('Lines of Hose').join(', ');
+                    const linesOther = formData.get('Lines of Hose Other');
+                    if (linesOther) linesOfHose += (linesOfHose ? ', ' : '') + `${linesOther} Lines`;
+                    
+                    let baTeams = formData.getAll('BA Teams').join(', ');
+                    const baTeamsOther = formData.get('BA Teams Other');
+                    if (baTeamsOther) baTeams += (baTeams ? ', ' : '') + `${baTeamsOther} Teams of BA`;
+
+                    const actions = formData.getAll('Actions').join(', ') + (formData.get('Actions Other') ? `, ${formData.get('Actions Other')}` : '');
+                    if(linesOfHose || baTeams || actions) reportBody += `L - Lines of Hose / Actions:\n`;
+                    if(linesOfHose) reportBody += `    Lines of Hose: ${linesOfHose}\n`;
+                    if(baTeams) reportBody += `    BA Teams: ${baTeams}\n`;
+                    if(actions) reportBody += `    Actions: ${actions}\n`;
+
+                    if(formData.getAll('Exposures').length > 0 || document.getElementById('sf-evacuation-checkbox').checked || formData.get('Life Involvement')) reportBody += `E - Exposures / Evacuations:\n`;
+                    const exposures = formData.getAll('Exposures').join(', ');
+                    if(exposures) reportBody += `    Exposures: ${exposures}\n`;
+                    const exposureLocation = formData.get('Location of Exposures');
+                    if(exposureLocation) reportBody += `    Exposure Location: ${exposureLocation}\n`;
+                    if (document.getElementById('sf-evacuation-checkbox').checked) {
+                        const evacuations = formData.get('Evacuations');
+                        if(evacuations) reportBody += `    Evacuations: ${evacuations}\n`;
+                    }
+                    const lifeInvolvement = formData.get('Life Involvement');
+                    if(lifeInvolvement) {
+                        reportBody += `    Life Involvement: ${lifeInvolvement}\n`;
+                        if(lifeInvolvement === 'Life Involvement Confirmed') {
+                            const numUnaccounted = formData.get('Number of Persons Unaccounted for');
+                            if(numUnaccounted) reportBody += `        Persons Unaccounted For: ${numUnaccounted}\n`;
+                        } else if (lifeInvolvement === 'Life Involvement not confirmed') {
+                            const possUnaccounted = formData.get('Possible Persons Unaccounted for');
+                            if(possUnaccounted) reportBody += `        Possible Persons Unaccounted For: ${possUnaccounted}\n`;
+                        }
+                    }
+
+                    let requiredResources = [];
+                    const pumpQty = formData.get('Additional Pump Qty');
+                    if (pumpQty) requiredResources.push(`Additional Pump (Qty: ${pumpQty})`);
+                    formData.getAll('Resources Required').forEach(r => requiredResources.push(r));
+                    const resRequiredOther = formData.get('Resources Required Other');
+                    if (resRequiredOther) requiredResources.push(`Other: ${resRequiredOther}`);
+
+                    const resAttendance = formData.getAll('Resources In Attendance').join(', ') + (formData.get('Resources In Attendance Other') ? `, ${formData.get('Resources In Attendance Other')}` : '');
+                    if(requiredResources.length > 0 || resAttendance) reportBody += `R - Resources:\n`;
+                    if(requiredResources.length > 0) reportBody += `    Required: ${requiredResources.join(', ')}\n`;
+                    if(resAttendance) reportBody += `    In Attendance: ${resAttendance}\n`;
+
+                    const sfIncidentName = formData.get('Incident Name');
+                    let commandChannels = formData.getAll('Command Channel');
+                    const otherChannel = formData.get('Command Channel Other');
+                    if (otherChannel) commandChannels.push(otherChannel);
+                    const sfControlPoint = formData.get('Control Point');
+                    const sfIC = formData.get('Incident Controller Main');
+                    const sfOO = formData.get('Operations Officer');
+                    if(sfIncidentName || commandChannels.length > 0 || sfControlPoint || sfIC || sfOO) reportBody += `S - Staging / Safety:\n`;
+                    if(sfIncidentName) reportBody += `    Incident Name: ${sfIncidentName}\n`;
+                    if (commandChannels.length > 0) reportBody += `    Command Channel: ${commandChannels.join(', ')}\n`;
+                    if(sfControlPoint) reportBody += `    Control Point: ${sfControlPoint}\n`;
+                    if(sfIC) reportBody += `    IC: ${sfIC}\n`;
+                    if(sfOO) reportBody += `    OO: ${sfOO}\n`;
+
+                }
+                // --- ROAD CRASH ---
+                else if (activeForm.id === 'road-crash-form') {
+                    reportBody += "\n--- RCR SITREP ---\n";
+                    const situation = formData.getAll('Situation').join(', ') + (formData.get('Situation Other') ? `, ${formData.get('Situation Other')}` : '');
+                    if(situation) reportBody += `Situation: ${situation}\n`;
+                    const entrapment = formData.getAll('Entrapment').join(', ') + (formData.get('Entrapment Specify') ? `: ${formData.get('Entrapment Specify')}` : '');
+                    if(entrapment) reportBody += `Entrapment: ${entrapment}\n`;
+                    const hazards = formData.getAll('Hazards').join(', ') + (formData.get('Hazards Other') ? `, ${formData.get('Hazards Other')}` : '');
+                    if(hazards) reportBody += `Hazards: ${hazards}\n`;
+                    const actions = formData.getAll('Actions').join(', ') + (formData.get('Actions Other') ? `, ${formData.get('Actions Other')}` : '');
+                    if(actions) reportBody += `Actions: ${actions}\n`;
+                    
+                    if(formData.getAll('Resources Required').length > 0 || formData.getAll('Resources In Attendance').length > 0) reportBody += `Resources:\n`;
+                    const resRequired = formData.getAll('Resources Required').join(', ') + (formData.get('RCR Resources Required Other') ? `, ${formData.get('RCR Resources Required Other')}` : '');
+                    if(resRequired) reportBody += `    Required: ${resRequired}\n`;
+                    const resAttendance = formData.getAll('Resources In Attendance').join(', ') + (formData.get('RCR Resources In Attendance Other') ? `, ${formData.get('RCR Resources In Attendance Other')}` : '');
+                    if(resAttendance) reportBody += `    In Attendance: ${resAttendance}\n`;
+                    
+                    const estTime = formData.get('Estimated Time');
+                    if(estTime) reportBody += `Estimated Time on Scene: ${estTime}\n`;
+                }
+                // --- HAZMAT ---
+                else if (activeForm.id === 'hazmat-form') {
+                    reportBody += "\n--- HAZMAT REPORT ---\n";
+                    const considerations = formData.getAll('Considerations').join(', ') + (formData.get('Considerations Other') ? `, ${formData.get('Considerations Other')}` : '');
+                    if(considerations) reportBody += `Considerations: ${considerations}\n\n`;
+
+                    activeForm.querySelectorAll('fieldset').forEach(fieldset => {
+                        const legend = fieldset.querySelector('legend').textContent;
+                        if (!legend.match(/^\d\./) && legend !== 'Protecting The Public') return;
+
+                        let sectionBody = '';
+                        fieldset.querySelectorAll('.hazmat-checklist-item, input[name="Public Protection"], textarea[name="Public Protection Notes"]').forEach(item => {
+                            const checkbox = item.querySelector('input[type="checkbox"]');
+                            if (checkbox && checkbox.checked) {
+                                const label = item.querySelector('label').textContent.trim();
+                                const notes = item.querySelector('input[type="text"]')?.value;
+                                const transformedLabel = transformHazmatText(label);
+                                sectionBody += `- ${transformedLabel}${notes ? ` (Notes: ${notes})` : ''}\n`;
+                            } else if (item.matches('textarea') && item.value) {
+                                sectionBody += `Notes: ${item.value}\n`;
+                            }
+                        });
+                        if (sectionBody) {
+                             reportBody += `${legend}\n${sectionBody}\n`;
+                        }
+                    });
+                }
+                // --- ONGOING BUSHFIRE ---
+                else if (activeForm.id === 'ongoing-bushfire-form') {
                     const incidentName = formData.get('Incident Name');
-                    reportBody += `Incident name: ${incidentName}\n`;
+                    if(incidentName) reportBody += `Incident name: ${incidentName}\n`;
                     const incidentStatus = formData.get('Incident Status');
                     if (incidentStatus) reportBody += `Incident status: ${incidentStatus}\n`;
                     const incidentLevel = formData.get('Incident Level');
@@ -2648,14 +3140,14 @@
                     const timeSafe = formData.get('Estimated time until safe');
                     if (timeSafe) reportBody += `Estimated time until safe: ${timeSafe}\n`;
                     
-                    reportBody += `\n--- IMT STRUCTURE ---\n`;
+                    reportBody += `--- IMT STRUCTURE ---\n`;
                     const imt_ic = formData.get('IMT IC'); if (imt_ic) reportBody += `IC: ${imt_ic}\n`;
                     const imt_oo = formData.get('IMT OO'); if (imt_oo) reportBody += `OO: ${imt_oo}\n`;
                     const imt_po = formData.get('IMT PO'); if (imt_po) reportBody += `PO: ${imt_po}\n`;
                     const imt_lo = formData.get('IMT LO'); if (imt_lo) reportBody += `LO: ${imt_lo}\n`;
                     const imt_pio = formData.get('IMT PIO'); if (imt_pio) reportBody += `PIO: ${imt_pio}\n`;
 
-                    reportBody += `\n--- OBJECTIVES ---\n`;
+                    reportBody += `--- OBJECTIVES ---\n`;
                     for (let i = 1; i <= 5; i++) {
                         const obj = formData.get(`Objective ${i}`);
                         const status = formData.get(`Objective ${i} Status`);
@@ -2664,7 +3156,7 @@
                         }
                     }
 
-                    reportBody += `\n--- STRATEGIES ---\n`;
+                    reportBody += `--- STRATEGIES ---\n`;
                     let strategy = formData.get('Strategies');
                     const strategyOther = formData.get('Strategies Other');
                     if (strategyOther) {
@@ -2672,13 +3164,14 @@
                     }
                     if (strategy) reportBody += `Strategies: ${strategy}\n`;
 
-                    reportBody += `\n--- COMMUNITY WARNINGS ---\n`;
+                    reportBody += `--- COMMUNITY WARNINGS ---\n`;
                     for (let i = 1; i <= 3; i++) {
                         const warningContainer = document.getElementById(`ob-warning-${i}-container`);
                         if (i > 1 && warningContainer.classList.contains('hidden-section')) continue;
                         const warning = formData.get(`Warning Level ${i}`);
                         if (warning && warning !== 'No Warning Required') {
-                            reportBody += `\n--- WARNING AREA ${i} ---\n`;
+                            if (i > 1) reportBody += `\n`;
+                            reportBody += `--- WARNING AREA ${i} ---\n`;
                             reportBody += `Warning Type: ${warning}\n`;
                             const actionStatement = formData.get(`Action Statement ${i}`);
                             if (actionStatement) reportBody += `Action Statement: ${actionStatement}\n`;
@@ -2699,12 +3192,12 @@
                     }
 
                     const risks = formData.get('Key Identified Risks');
-                    if (risks) reportBody += `\n--- KEY IDENTIFIED RISKS ---\n${risks}\n`;
+                    if (risks) reportBody += `--- KEY IDENTIFIED RISKS ---\n${risks}\n`;
 
                     let supportAgencies = formData.getAll('Support Agencies').join(', ');
                     const supportOther = formData.get('Support Agencies Other');
                     if (supportOther) supportAgencies += `, Other: ${supportOther}`;
-                    if (supportAgencies) reportBody += `\nSupport agencies on site: ${supportAgencies}\n`;
+                    if (supportAgencies) reportBody += `Support agencies on site: ${supportAgencies}\n`;
 
                     const relief = formData.get('Relief Management');
                     if (relief) {
@@ -2713,12 +3206,12 @@
                             const reliefDetails = formData.get('Relief Required Details');
                             if (reliefDetails) reliefStr += `\n    Details: ${reliefDetails}`;
                         }
-                        reportBody += `\n${reliefStr}\n`;
+                        reportBody += `${reliefStr}\n`;
                     }
 
                     const isgUpdate = formData.get('ISG Update');
                     if (isgUpdate) {
-                        let isgStr = `\n--- INCIDENT SUPPORT GROUP ---\nISG updates: ${isgUpdate}`;
+                        let isgStr = `--- INCIDENT SUPPORT GROUP ---\nISG updates: ${isgUpdate}`;
                         if (isgUpdate === 'Scheduled') {
                             const details = formData.get('ISG Scheduled Details');
                             if (details) isgStr += ` (${details})`;
@@ -2730,7 +3223,7 @@
                     }
 
                     const furtherUpdate = formData.get('Further Update');
-                    if (furtherUpdate) reportBody += `\nFurther Update: ${furtherUpdate}\n`;
+                    if (furtherUpdate) reportBody += `Further Update: ${furtherUpdate}\n`;
                 }
                 
                 generatedReportText = reportBody;
