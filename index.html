@@ -118,7 +118,7 @@
             font-weight: 600;
         }
         
-        .incident-details-grid {
+        .incident-details-grid, .imt-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
@@ -287,7 +287,7 @@
             background-color: var(--secondary-accent-hover);
         }
         
-        .classification-note, .action-note {
+        .classification-note, .action-note, .sitrep-instruction {
             font-size: 0.8rem;
             color: var(--label-color);
             margin-top: 0.75rem;
@@ -300,6 +300,11 @@
         .action-note {
             grid-column: 1 / -1; /* Span across all columns in grid */
             margin-top: 0;
+        }
+
+        .sitrep-instruction {
+            margin-bottom: 1.5rem;
+            border: 1px dashed var(--border-color);
         }
 
         .checklist-form { display: none; }
@@ -361,8 +366,104 @@
             flex-shrink: 0;
         }
 
-        .hidden-input {
+        .hidden-input, .hidden-section {
             display: none;
+        }
+        
+        .hazmat-checklist-item {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .hazmat-checklist-item label {
+            margin-bottom: 0;
+        }
+        .hazmat-checklist-item input[type="text"] {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+        
+        .public-protection-definition {
+            font-size: 0.85rem;
+            color: var(--label-color);
+            padding-left: 2.2rem; /* Align with checkbox text */
+            margin-top: 0.25rem;
+        }
+        .public-protection-definition strong {
+            color: var(--text-color);
+        }
+
+        .multiple-warning-container {
+            border-top: 2px dashed var(--border-color);
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+
+        .direction-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem 1.5rem;
+            align-items: center;
+        }
+
+        .direction-grid input[type="text"] {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            .direction-grid {
+                grid-template-columns: 1fr;
+            }
+            .direction-grid .compass-grid {
+                margin: 0 auto;
+            }
+        }
+
+        .compass-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-width: 250px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .compass-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .compass-item label {
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        .compass-item.center {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .objective-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .objective-grid label {
+            margin-bottom: 0;
+        }
+        .objective-grid select {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+
+        .lga-input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .lga-input-group input[type="text"] {
             margin-top: 0.5rem;
         }
 
@@ -408,9 +509,11 @@
             <section class="control-section">
                 <label for="checklist-type-selector">Checklist Type:</label>
                 <select id="checklist-type-selector">
-                    <option value="bushfire">Bushfire (PAFTACS)</option>
-                    <option value="structure-fire">Structure Fire (HAULER)</option>
-                    <option value="road-crash">Road Crash Rescue</option>
+                    <option value="bushfire">Initial SitRep - Bushfire</option>
+                    <option value="structure-fire">Initial SitRep - Structure Fire</option>
+                    <option value="road-crash">Initial SitRep - Road Crash Rescue</option>
+                    <option value="hazmat">Hazmat</option>
+                    <option value="ongoing-bushfire">Ongoing - Bushfire Informative</option>
                 </select>
             </section>
 
@@ -457,9 +560,24 @@
                                 <label class="inline-checkbox-label">
                                     <input type="checkbox" id="bf-pos-manual-checkbox" class="pos-manual-checkbox"> Enter Position Manually
                                 </label>
+                                <p class="sub-text" style="margin-top: -0.5rem;">Ensure location services enabled on device</p>
                                 <input type="text" id="bf-lat-long" name="Lat/Long" placeholder="Lat/Long" readonly>
                                 <input type="text" id="bf-street-address" name="Street Address" placeholder="Street Address" readonly>
-                                <input type="text" id="bf-direction-travel" name="Fire's Direction of Travel" placeholder="Fire's Direction of Travel">
+                                <div class="direction-grid">
+                                    <label for="bf-direction-travel">Fire's Direction of Travel</label>
+                                    <div class="compass-grid">
+                                        <div class="compass-item"><label><input type="checkbox" value="NW">NW</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="N">N</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="NE">NE</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="W">W</label></div>
+                                        <div class="compass-item center">DIR</div>
+                                        <div class="compass-item"><label><input type="checkbox" value="E">E</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="SW">SW</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="S">S</label></div>
+                                        <div class="compass-item"><label><input type="checkbox" value="SE">SE</label></div>
+                                    </div>
+                                    <input type="text" id="bf-direction-travel" name="Fire's Direction of Travel" placeholder="Select from compass or type...">
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -474,10 +592,15 @@
                         </div>
                         <div><label for="a-area">A: Area Involved (Hectares)</label><input type="number" id="a-area" name="Area (ha)"></div>
                         <div>
-                            <label for="f-fuel-load">F: Fuel Load, Type & Intensity</label>
-                            <select id="f-fuel-load" name="Fuel Load" title="Fuel Load"><option>Light</option><option>Moderate</option><option>Heavy</option></select>
-                            <select id="f-fuel-type" name="Fuel Type" title="Fuel Type" style="margin-top: 0.5rem;"><option>Grass</option><option>Scrub/Shrubland</option><option>Woodland</option><option>Forest/Plantation</option></select>
-                            <select id="f-fire-intensity" name="Fire Intensity" title="Fire Intensity" style="margin-top: 0.5rem;"><option>Low</option><option>Moderate</option><option>High</option><option>Extreme</option></select>
+                            <label>F: Fuel</label>
+                            <div class="form-stack">
+                                <label for="f-fuel-load">Fuel Load</label>
+                                <select id="f-fuel-load" name="Fuel Load" title="Fuel Load"><option>Light</option><option>Moderate</option><option>Heavy</option></select>
+                                <label for="f-fuel-type">Fuel Type</label>
+                                <select id="f-fuel-type" name="Fuel Type" title="Fuel Type"><option>Grass</option><option>Scrub/Shrubland</option><option>Woodland</option><option>Forest/Plantation</option></select>
+                                <label for="f-fire-intensity">Fire Intensity</label>
+                                <select id="f-fire-intensity" name="Fire Intensity" title="Fire Intensity"><option>Low</option><option>Moderate</option><option>High</option><option>Extreme</option></select>
+                            </div>
                         </div>
                         <div><label for="t-time">T: Estimated Time to Control</label><input type="text" id="t-time" name="Time to Control"></div>
                         <div>
@@ -527,29 +650,102 @@
                 
                 <fieldset>
                     <legend>Public Information</legend>
-                    <div class="form-stack">
-                        <div>
-                            <label>Warning Level</label>
-                            <div class="button-group warning-buttons">
-                                <input type="hidden" name="Warning Level" id="bf-warning-level">
-                                <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
-                                <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
-                                <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
-                                <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                    <!-- Warning 1 -->
+                    <div id="bf-warning-1-container">
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="bf-1">
+                                    <input type="hidden" name="Warning Level 1" id="bf-warning-level-1">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="bf-action-statement-1">Action Statement</label>
+                                <select name="Action Statement 1" id="bf-action-statement-1"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" id="bf-n-boundary-1" name="Northern Boundary 1" placeholder="Northern Boundary">
+                                    <input type="text" id="bf-e-boundary-1" name="Eastern Boundary 1" placeholder="Eastern Boundary">
+                                    <input type="text" id="bf-s-boundary-1" name="Southern Boundary 1" placeholder="Southern Boundary">
+                                    <input type="text" id="bf-w-boundary-1" name="Western Boundary 1" placeholder="Western Boundary">
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <label>Warning Boundaries</label>
-                            <div class="form-stack" style="margin-top: 0.5rem;">
-                                <input type="text" id="bf-n-boundary" name="Northern Boundary" placeholder="Northern Boundary">
-                                <input type="text" id="bf-e-boundary" name="Eastern Boundary" placeholder="Eastern Boundary">
-                                <input type="text" id="bf-s-boundary" name="Southern Boundary" placeholder="Southern Boundary">
-                                <input type="text" id="bf-w-boundary" name="Western Boundary" placeholder="Western Boundary">
+                    </div>
+                    <!-- Warning 2 -->
+                    <div id="bf-warning-2-container" class="multiple-warning-container hidden-section">
+                        <legend>Warning Area 2</legend>
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="bf-2">
+                                    <input type="hidden" name="Warning Level 2" id="bf-warning-level-2">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="bf-action-statement-2">Action Statement</label>
+                                <select name="Action Statement 2" id="bf-action-statement-2"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" id="bf-n-boundary-2" name="Northern Boundary 2" placeholder="Northern Boundary">
+                                    <input type="text" id="bf-e-boundary-2" name="Eastern Boundary 2" placeholder="Eastern Boundary">
+                                    <input type="text" id="bf-s-boundary-2" name="Southern Boundary 2" placeholder="Southern Boundary">
+                                    <input type="text" id="bf-w-boundary-2" name="Western Boundary 2" placeholder="Western Boundary">
+                                </div>
                             </div>
                         </div>
-                        <div class="call-button-container" style="margin-bottom: 0;">
-                            <a href="tel:1800718288" class="call-button">Call Coordinator Public Info (CPI) - 1800 718 288</a>
+                    </div>
+                    <!-- Warning 3 -->
+                     <div id="bf-warning-3-container" class="multiple-warning-container hidden-section">
+                        <legend>Warning Area 3</legend>
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="bf-3">
+                                    <input type="hidden" name="Warning Level 3" id="bf-warning-level-3">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="bf-action-statement-3">Action Statement</label>
+                                <select name="Action Statement 3" id="bf-action-statement-3"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" id="bf-n-boundary-3" name="Northern Boundary 3" placeholder="Northern Boundary">
+                                    <input type="text" id="bf-e-boundary-3" name="Eastern Boundary 3" placeholder="Eastern Boundary">
+                                    <input type="text" id="bf-s-boundary-3" name="Southern Boundary 3" placeholder="Southern Boundary">
+                                    <input type="text" id="bf-w-boundary-3" name="Western Boundary 3" placeholder="Western Boundary">
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div style="margin-top: 1.5rem;">
+                        <label class="inline-checkbox-label" id="bf-add-warning-2-label">
+                            <input type="checkbox" id="bf-add-warning-2-checkbox"> Add a second Warning Area
+                        </label>
+                         <label class="inline-checkbox-label hidden-section" id="bf-add-warning-3-label">
+                            <input type="checkbox" id="bf-add-warning-3-checkbox"> Add a third Warning Area
+                        </label>
+                    </div>
+                    <div class="call-button-container" style="margin-bottom: 0; margin-top: 1.5rem;">
+                        <a href="tel:1800718288" class="call-button">Call Coordinator Public Info (CPI) - 1800 718 288</a>
                     </div>
                 </fieldset>
 
@@ -606,6 +802,7 @@
                         <label class="inline-checkbox-label">
                             <input type="checkbox" id="sf-pos-manual-checkbox" class="pos-manual-checkbox"> Enter Position Manually
                         </label>
+                        <p class="sub-text" style="margin-top: -0.5rem;">Ensure location services enabled on device</p>
                         <input type="text" id="sf-lat-long" name="Lat/Long" placeholder="Lat/Long" readonly>
                         <input type="text" id="sf-street-address" name="Street Address" placeholder="Street Address" readonly>
                     </div>
@@ -812,7 +1009,7 @@
                                 <button type="button" class="option-button btn-yellow" data-value="6 6" data-description="As reported, incoming resources sufficient.">6 6<span class="desc">As reported...</span></button>
                                 <button type="button" class="option-button btn-red" data-value="8 8" data-description="Incident rapidly escalating, Upgrade response 3rd alarm or higher.">8 8<span class="desc">Escalating...</span></button>
                             </div>
-                             <div class="advisory-text hidden-input" id="rc-arrival-desc"></div>
+                             <div class="advisory-text hidden-input" id="rcr-arrival-desc"></div>
                         </div>
 
                         <div class="call-button-container">
@@ -838,6 +1035,7 @@
                         <label class="inline-checkbox-label">
                             <input type="checkbox" id="rcr-pos-manual-checkbox" class="pos-manual-checkbox"> Enter Position Manually
                         </label>
+                        <p class="sub-text" style="margin-top: -0.5rem;">Ensure location services enabled on device</p>
                         <input type="text" id="rcr-lat-long" name="Lat/Long" placeholder="Lat/Long" readonly>
                         <input type="text" id="rcr-street-address" name="Street Address" placeholder="Street Address" readonly>
                     </div>
@@ -945,6 +1143,527 @@
                     </div>
                 </fieldset>
             </form>
+            
+            <!-- Hazmat Checklist Form -->
+            <form id="hazmat-form" class="checklist-form">
+                <fieldset>
+                    <legend>Arrival & Classification</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Arrival Code (on arrival)</label>
+                            <div class="button-group arrival-buttons">
+                                <input type="hidden" name="Arrival Code" id="hm-arrival-code">
+                                <button type="button" class="option-button btn-green" data-value="4 4" data-description="Nothing found, investigating, back up normal road.">4 4<span class="desc">Nothing found...</span></button>
+                                <button type="button" class="option-button btn-yellow" data-value="6 6" data-description="As reported, incoming resources sufficient.">6 6<span class="desc">As reported...</span></button>
+                                <button type="button" class="option-button btn-red" data-value="8 8" data-description="Incident rapidly escalating, Upgrade response 3rd alarm or higher.">8 8<span class="desc">Escalating...</span></button>
+                            </div>
+                            <div class="advisory-text hidden-input" id="hm-arrival-desc"></div>
+                        </div>
+
+                        <div class="call-button-container">
+                            <a href="tel:1800198140" class="call-button">Call Comcen - 1800 198 140</a>
+                        </div>
+
+                        <div>
+                            <label>Classification (within 5 minutes of arrival)</label>
+                            <div class="button-group classification-buttons">
+                                <input type="hidden" name="Classification" id="hm-classification">
+                                <button type="button" class="option-button btn-green" data-value="1st Alarm">1st Alarm</button>
+                                <button type="button" class="option-button btn-yellow" data-value="2nd Alarm">2nd Alarm</button>
+                                <button type="button" class="option-button btn-orange" data-value="3rd Alarm">3rd Alarm</button>
+                                <button type="button" class="option-button btn-darkorange" data-value="4th Alarm">4th Alarm</button>
+                                <button type="button" class="option-button btn-red" data-value="5th Alarm">5th Alarm</button>
+                            </div>
+                            <p class="classification-note">1 Alarm = 1 FRS Appliance (3.4U, HSR, CP), BA operations require 2nd Alarm or Higher.</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Considerations</legend>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="Considerations" value="Crew Safety">Crew Safety</label>
+                        <label><input type="checkbox" name="Considerations" value="PPE">PPE</label>
+                        <label><input type="checkbox" name="Considerations" value="Site Layout">Site Layout</label>
+                        <label><input type="checkbox" name="Considerations" value="Specialist Advice">Specialist Advice</label>
+                        <label><input type="checkbox" name="Considerations" value="Public Exposure">Public Exposure</label>
+                        <label><input type="checkbox" name="Considerations" value="Decontamination">Decontamination</label>
+                        <label><input type="checkbox" name="Considerations" value="Atmospheric Monitoring">Atmospheric Monitoring</label>
+                        <label><input type="checkbox" name="Considerations" value="Rescue">Rescue</label>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <label for="hazmat-considerations-other">Other Considerations</label>
+                        <input type="text" id="hazmat-considerations-other" name="Considerations Other" placeholder="Other...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>1. ARRIVAL</legend>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-arrival-1"> Approach from upwind/uphill</label>
+                        <input type="text" name="hazmat-arrival-1-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-arrival-2"> Minimum of 70 m from incident</label>
+                        <input type="text" name="hazmat-arrival-2-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-arrival-3"> DO NOT enter smoke, gas or vapour cloud</label>
+                        <input type="text" name="hazmat-arrival-3-notes" placeholder="Notes...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>2. PRODUCT IDENTIFICATION & IMMEDIATE ACTION</legend>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-1"> Assess the scene and secure the area</label>
+                        <input type="text" name="hazmat-prod-id-1-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-2"> Effect a snatch rescue if it is safe to do so</label>
+                        <input type="text" name="hazmat-prod-id-2-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-3"> Consider evacuation or shelter in place</label>
+                        <input type="text" name="hazmat-prod-id-3-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-4"> Establish communications with ComCen</label>
+                        <input type="text" name="hazmat-prod-id-4-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-5"> Establish minimum decontamination process</label>
+                        <input type="text" name="hazmat-prod-id-5-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-6"> Determine PPE for initial identification of substance</label>
+                        <input type="text" name="hazmat-prod-id-6-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-7"> Identify substance</label>
+                        <input type="text" name="hazmat-prod-id-7-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-8"> Record details on HIB</label>
+                        <input type="text" name="hazmat-prod-id-8-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-9"> Use detection equipment to assist/confirm presence of hazardous material</label>
+                        <input type="text" name="hazmat-prod-id-9-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-10"> Complete information on the HAG</label>
+                        <input type="text" name="hazmat-prod-id-10-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-11"> Transmit information from side one of the HAG to ComCen</label>
+                        <input type="text" name="hazmat-prod-id-11-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-12"> Receive information from ComCen and complete side two of the HAG</label>
+                        <input type="text" name="hazmat-prod-id-12-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-prod-id-13"> Effect rescue/s when safe to do so</label>
+                        <input type="text" name="hazmat-prod-id-13-notes" placeholder="Notes...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>3. FIRST STRIKE ACTION</legend>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-1"> Establish Hot, Warm and Cold zones (see Hazmat Site Layout)</label>
+                        <input type="text" name="hazmat-strike-1-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-2"> Establish IMT</label>
+                        <input type="text" name="hazmat-strike-2-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-3"> Re-assess decontamination process</label>
+                        <input type="text" name="hazmat-strike-3-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-4"> Re-assess PPE</label>
+                        <input type="text" name="hazmat-strike-4-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-5"> Initiate corrective action based on the HAG</label>
+                        <input type="text" name="hazmat-strike-5-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-6"> Obtain resources to render the incident safe</label>
+                        <input type="text" name="hazmat-strike-6-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-7"> Maintain close liaison with the FLO/HEAT</label>
+                        <input type="text" name="hazmat-strike-7-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-8"> Consult with Main Roads regarding road closures</label>
+                        <input type="text" name="hazmat-strike-8-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-strike-9"> Consider Department of Water and Environmental Regulation Pollution Response involvement</label>
+                        <input type="text" name="hazmat-strike-9-notes" placeholder="Notes...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>4. RECOVERY</legend>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-recovery-1"> Recover the substance, based on advice from the FLO or the HEAT</label>
+                        <input type="text" name="hazmat-recovery-1-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-recovery-2"> Liaise and arrange for disposal of recovered material</label>
+                        <input type="text" name="hazmat-recovery-2-notes" placeholder="Notes...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>5. DECONTAMINATION</legend>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-decon-1"> Full decontamination procedures are to be followed unless otherwise specified by the FLO of the HEAT</label>
+                        <input type="text" name="hazmat-decon-1-notes" placeholder="Notes...">
+                    </div>
+                    <div class="hazmat-checklist-item">
+                        <label><input type="checkbox" name="hazmat-decon-2"> Seek advice regarding the disposal of decontamination water and the cleaning of equipment</label>
+                        <input type="text" name="hazmat-decon-2-notes" placeholder="Notes...">
+                    </div>
+                </fieldset>
+                
+                <fieldset>
+                    <legend>Protecting The Public</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label><input type="checkbox" name="Public Protection" value="Shelter In Place"> Shelter In Place</label>
+                            <div class="public-protection-definition">
+                                <p><strong>Definition.</strong> The public in the downwind zone are immediately directed into a building or advised to remain indoors, close all windows and doors, and to turn off air-conditioners until the danger passes. This is a very simple operation which does not require many resources.</p>
+                                <p style="margin-top: 0.5rem;"><strong>Application.</strong> Shelter in place if or when: There is not enough time to evacuate before the hazard affects the area. The incident or the hazard is likely to be of a short duration. Approximately not more than 1 to 2 hours.</p>
+                            </div>
+                        </div>
+                         <div>
+                            <label><input type="checkbox" name="Public Protection" value="Evacuation"> Evacuation</label>
+                            <div class="public-protection-definition">
+                                <p><strong>Definition.</strong> The public are moved from the threatened area to a safer place only when there is enough time to execute this strategy. The public must be warned beforehand to prepare to leave the area.</p>
+                                <p style="margin-top: 0.5rem;"><strong>Application.</strong> Evacuate when: The fumes or vapours present a risk of explosion. It takes a long time for the area to be clear of fumes. The buildings cannot be sufficiently sealed.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="hazmat-public-protection-notes">Notes</label>
+                            <textarea id="hazmat-public-protection-notes" name="Public Protection Notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Public Information</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Warning Level</label>
+                            <div class="button-group warning-buttons">
+                                <input type="hidden" name="Warning Level" id="hazmat-warning-level">
+                                <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                <button type="button" class="option-button btn-yellow" data-value="Hazmat Warning">Hazmat Warning</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="hazmat-impact-area">Smoke/Plume/Impact Area</label>
+                            <input type="text" id="hazmat-impact-area" name="Smoke/Plume/Impact Area" placeholder="Describe the affected area...">
+                        </div>
+                        <div>
+                            <label for="hazmat-community-impact">Risk to the Community</label>
+                            <textarea id="hazmat-community-impact" name="Community Impact" rows="3" placeholder="e.g., Smoke affecting nearby suburbs, road closures..."></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Brigade Details</legend>
+                    <div class="form-stack">
+                         <label for="hm-report-oic">Report by (OIC)</label>
+                         <input type="text" id="hm-report-oic" name="Report by (OIC)">
+                         <label for="hm-report-brigade">Brigade</label>
+                         <input type="text" id="hm-report-brigade" name="Brigade">
+                    </div>
+                </fieldset>
+            </form>
+
+            <!-- Ongoing Bushfire Form -->
+            <form id="ongoing-bushfire-form" class="checklist-form">
+                <fieldset>
+                    <legend>Incident Status & Details</legend>
+                    <div class="form-stack">
+                        <input type="text" id="ob-incident-name" name="Incident Name" placeholder="Auto-generated Incident Name" readonly>
+                        <label class="inline-checkbox-label">
+                            <input type="checkbox" id="ob-name-manually-checkbox" class="name-manually-checkbox"> Name Manually
+                        </label>
+                        <div>
+                            <label for="ob-incident-status">Incident status</label>
+                            <select id="ob-incident-status" name="Incident Status">
+                                <option>Going</option>
+                                <option>Contained and Not yet Controlled</option>
+                                <option>Contained and Controlled</option>
+                                <option>Safe</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ob-incident-level">Incident Level</label>
+                            <select id="ob-incident-level" name="Incident Level">
+                                <option>Level 1</option>
+                                <option>Level 2</option>
+                                <option>Level 3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ob-managed-under">Incident is being managed under</label>
+                            <select id="ob-managed-under" name="Managed Under">
+                                <option>Bushfire Act 1954</option>
+                                <option>Fire Brigade Act 1942</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Controlling Agency</label>
+                            <div class="checkbox-group" id="ob-controlling-agency-group">
+                                <label><input type="checkbox" name="Controlling Agency" value="DFES">DFES</label>
+                                <label><input type="checkbox" name="Controlling Agency" value="DBCA">DBCA</label>
+                                <div class="lga-input-group">
+                                    <label class="inline-checkbox-label"><input type="checkbox" id="ob-lga-checkbox" name="Controlling Agency" value="LGA">LGA</label>
+                                    <input type="text" id="ob-lga-name" name="LGA Name" class="hidden-input" placeholder="Enter LGA Name">
+                                </div>
+                            </div>
+                        </div>
+                        <input type="text" id="ob-command-channel" name="Command Channel" placeholder="Command Channel">
+                        <input type="text" id="ob-control-point" name="Control Point" placeholder="Control Point">
+                        <div>
+                            <label for="ob-fire-size">Fire Size (ha)</label>
+                            <input type="number" id="ob-fire-size" name="Fire Size (ha)">
+                        </div>
+                        <div id="ob-time-contained-wrapper">
+                            <label for="ob-time-contained" id="ob-time-contained-label">Estimated time until contained</label>
+                            <input type="text" id="ob-time-contained" name="Estimated time until contained">
+                        </div>
+                        <input type="text" id="ob-time-safe" name="Estimated time until safe" placeholder="Estimated time until safe">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Current IMT structure</legend>
+                    <div class="imt-grid">
+                        <input type="text" name="IMT IC" placeholder="IC (Rank Surname)">
+                        <input type="text" name="IMT OO" placeholder="OO (Rank Surname)">
+                        <input type="text" name="IMT PO" placeholder="PO (Rank Surname)">
+                        <input type="text" name="IMT LO" placeholder="LO (Rank Surname)">
+                        <input type="text" name="IMT PIO" placeholder="PIO (Rank Surname)">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Objectives</legend>
+                    <div class="objective-grid">
+                        <label for="ob-obj-1">Obj 1</label>
+                        <input type="text" id="ob-obj-1" name="Objective 1">
+                        <select name="Objective 1 Status"><option>On Target</option><option>Below Target</option><option>Above Target</option></select>
+                        
+                        <label for="ob-obj-2">Obj 2</label>
+                        <input type="text" id="ob-obj-2" name="Objective 2">
+                        <select name="Objective 2 Status"><option>On Target</option><option>Below Target</option><option>Above Target</option></select>
+
+                        <label for="ob-obj-3">Obj 3</label>
+                        <input type="text" id="ob-obj-3" name="Objective 3">
+                        <select name="Objective 3 Status"><option>On Target</option><option>Below Target</option><option>Above Target</option></select>
+
+                        <label for="ob-obj-4">Obj 4</label>
+                        <input type="text" id="ob-obj-4" name="Objective 4">
+                        <select name="Objective 4 Status"><option>On Target</option><option>Below Target</option><option>Above Target</option></select>
+
+                        <label for="ob-obj-5">Obj 5</label>
+                        <input type="text" id="ob-obj-5" name="Objective 5">
+                        <select name="Objective 5 Status"><option>On Target</option><option>Below Target</option><option>Above Target</option></select>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Strategies</legend>
+                    <div class="form-stack">
+                        <select name="Strategies">
+                            <option>Offensive</option>
+                            <option>Defensive</option>
+                        </select>
+                        <label class="inline-checkbox-label">
+                            <input type="checkbox" class="toggle-input-checkbox" data-target="ob-strategies-other"> Other
+                        </label>
+                        <input type="text" id="ob-strategies-other" name="Strategies Other" class="hidden-input" placeholder="Specify other strategy">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Community Warnings</legend>
+                    <!-- Warning 1 -->
+                    <div id="ob-warning-1-container">
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="ob-1">
+                                    <input type="hidden" name="Warning Level 1" id="ob-warning-level-1">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="ob-action-statement-1">Action Statement</label>
+                                <select name="Action Statement 1" id="ob-action-statement-1"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" name="Northern Boundary 1" placeholder="Northern Boundary">
+                                    <input type="text" name="Eastern Boundary 1" placeholder="Eastern Boundary">
+                                    <input type="text" name="Southern Boundary 1" placeholder="Southern Boundary">
+                                    <input type="text" name="Western Boundary 1" placeholder="Western Boundary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Warning 2 -->
+                    <div id="ob-warning-2-container" class="multiple-warning-container hidden-section">
+                        <legend>Warning Area 2</legend>
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="ob-2">
+                                    <input type="hidden" name="Warning Level 2" id="ob-warning-level-2">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="ob-action-statement-2">Action Statement</label>
+                                <select name="Action Statement 2" id="ob-action-statement-2"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" name="Northern Boundary 2" placeholder="Northern Boundary">
+                                    <input type="text" name="Eastern Boundary 2" placeholder="Eastern Boundary">
+                                    <input type="text" name="Southern Boundary 2" placeholder="Southern Boundary">
+                                    <input type="text" name="Western Boundary 2" placeholder="Western Boundary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Warning 3 -->
+                     <div id="ob-warning-3-container" class="multiple-warning-container hidden-section">
+                        <legend>Warning Area 3</legend>
+                        <div class="form-stack">
+                            <div>
+                                <label>Warning Level</label>
+                                <div class="button-group warning-buttons" data-warning-id="ob-3">
+                                    <input type="hidden" name="Warning Level 3" id="ob-warning-level-3">
+                                    <button type="button" class="option-button btn-blue" data-value="No Warning Required">No Warning Required</button>
+                                    <button type="button" class="option-button btn-yellow" data-value="Advice">Advice</button>
+                                    <button type="button" class="option-button btn-orange" data-value="Watch and Act">Watch and Act</button>
+                                    <button type="button" class="option-button btn-red" data-value="Emergency Warning">Emergency Warning</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="ob-action-statement-3">Action Statement</label>
+                                <select name="Action Statement 3" id="ob-action-statement-3"></select>
+                            </div>
+                            <div>
+                                <label>Warning Boundaries</label>
+                                <div class="form-stack" style="margin-top: 0.5rem;">
+                                    <input type="text" name="Northern Boundary 3" placeholder="Northern Boundary">
+                                    <input type="text" name="Eastern Boundary 3" placeholder="Eastern Boundary">
+                                    <input type="text" name="Southern Boundary 3" placeholder="Southern Boundary">
+                                    <input type="text" name="Western Boundary 3" placeholder="Western Boundary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.5rem;">
+                        <label class="inline-checkbox-label" id="ob-add-warning-2-label">
+                            <input type="checkbox" id="ob-add-warning-2-checkbox"> Add a second Warning Area
+                        </label>
+                         <label class="inline-checkbox-label hidden-section" id="ob-add-warning-3-label">
+                            <input type="checkbox" id="ob-add-warning-3-checkbox"> Add a third Warning Area
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Risks & Support</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label for="ob-risks">Key Identified Risks</label>
+                            <textarea id="ob-risks" name="Key Identified Risks" rows="4"></textarea>
+                        </div>
+                        <div>
+                            <label>Support agencies on site</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="Support Agencies" value="WAPol">WAPol</label>
+                                <label><input type="checkbox" name="Support Agencies" value="Local Government">Local Government</label>
+                                <label><input type="checkbox" name="Support Agencies" value="MainRoads">MainRoads</label>
+                                <label><input type="checkbox" name="Support Agencies" value="Salvation Army">Salvation Army</label>
+                                <label><input type="checkbox" class="toggle-input-checkbox" data-target="ob-support-other">Other</label>
+                            </div>
+                            <input type="text" id="ob-support-other" name="Support Agencies Other" class="hidden-input" placeholder="Specify other agency">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Forward Planning</legend>
+                    <div class="form-stack">
+                        <div>
+                            <label>Relief management</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="Relief Management" value="Self Managed">Self Managed</label>
+                                <label><input type="radio" name="Relief Management" value="Required" class="toggle-input-checkbox" data-target="ob-relief-required">Required</label>
+                            </div>
+                            <textarea id="ob-relief-required" name="Relief Required Details" class="hidden-input" placeholder="Details for relief required..." rows="2"></textarea>
+                        </div>
+                        <div>
+                            <label>Further Update</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="Further Update" value="1 hour">1 hour</label>
+                                <label><input type="radio" name="Further Update" value="3 hours">3 hours</label>
+                                <label><input type="radio" name="Further Update" value="8 hours">8 hours</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Incident Support Group</legend>
+                     <div>
+                        <label>ISG updates</label>
+                        <div class="radio-group" id="ob-isg-group">
+                            <label><input type="radio" name="ISG Update" value="Scheduled">ISG Scheduled</label>
+                            <label><input type="radio" name="ISG Update" value="Not Required">ISG not required</label>
+                            <label><input type="radio" name="ISG Update" value="Planned">ISG planned</label>
+                        </div>
+                        <input type="text" id="ob-isg-scheduled-details" name="ISG Scheduled Details" class="hidden-input" placeholder="Time/Details for scheduled ISG...">
+                        <input type="text" id="ob-isg-planned-details" name="ISG Planned Details" class="hidden-input" placeholder="Time/Details for planned ISG...">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Brigade Details</legend>
+                    <div class="form-stack">
+                         <label for="ob-report-oic">Report by (OIC)</label>
+                         <input type="text" id="ob-report-oic" name="Report by (OIC)">
+                         <label for="ob-report-brigade">Brigade</label>
+                         <input type="text" id="ob-report-brigade" name="Brigade">
+                    </div>
+                </fieldset>
+            </form>
+
+            <p class="sitrep-instruction">Complete a SitRep whenever the situation changes, change in incident progression or escalation or significant event happens</p>
 
             <section class="action-buttons">
                 <button id="generate-report-btn" class="action-button">Generate Report</button>
@@ -982,6 +1701,19 @@
 
             let generatedReportText = '';
             const RSS_URL = 'https://api.allorigins.win/raw?url=https://api.emergency.wa.gov.au/v1/rss/incidents';
+
+            const actionStatementsMap = {
+                'Advice': ['PREPARE NOW', 'STAY INFORMED', 'MONITOR CONDITIONS'],
+                'Watch and Act': ['PREPARE TO LEAVE', 'LEAVE NOW IF NOT PREPARED', 'BE AWARE OF EMBER ATTACK', 'MONITOR CONDITIONS'],
+                'Emergency Warning': ['LEAVE NOW', 'TOO LATE TO LEAVE'],
+                'No Warning Required': [],
+                '': []
+            };
+
+            const compassMap = {
+                'N': 'North', 'NE': 'North East', 'E': 'East', 'SE': 'South East',
+                'S': 'South', 'SW': 'South West', 'W': 'West', 'NW': 'North West'
+            };
 
             // --- Geolocation ---
             async function reverseGeocode(lat, lon, addressEl) {
@@ -1061,13 +1793,31 @@
                 }
             }
 
+            function updateActionStatementDropdown(warningLevel, dropdownElement) {
+                dropdownElement.innerHTML = '';
+                const statements = actionStatementsMap[warningLevel] || [];
+                if (statements.length === 0) {
+                    dropdownElement.style.display = 'none';
+                    if(dropdownElement.previousElementSibling) dropdownElement.previousElementSibling.style.display = 'none';
+                } else {
+                    dropdownElement.style.display = 'block';
+                    if(dropdownElement.previousElementSibling) dropdownElement.previousElementSibling.style.display = 'block';
+                    statements.forEach(stmt => {
+                        const option = document.createElement('option');
+                        option.value = stmt;
+                        option.textContent = stmt;
+                        dropdownElement.appendChild(option);
+                    });
+                }
+            }
+
             function initializeInteractiveInputs() {
                 document.querySelectorAll('.toggle-input-checkbox').forEach(checkbox => {
                     checkbox.addEventListener('change', (e) => {
                         const targetId = e.target.dataset.target;
                         const inputEl = document.getElementById(targetId);
                         if (inputEl) {
-                            inputEl.style.display = e.target.checked ? 'block' : 'none';
+                            inputEl.classList.toggle('hidden-input', !e.target.checked);
                             if (!e.target.checked) inputEl.value = '';
                         }
                     });
@@ -1100,20 +1850,14 @@
                     checkbox.addEventListener('change', (e) => {
                         const form = e.target.closest('form');
                         if (!form) return;
-
                         const latLongInput = form.querySelector('input[name="Lat/Long"]');
                         const addressInput = form.querySelector('input[name="Street Address"]');
                         const locationBtn = form.querySelector('.location-btn');
-
                         const isManual = e.target.checked;
-
                         if (latLongInput) latLongInput.readOnly = !isManual;
                         if (addressInput) addressInput.readOnly = !isManual;
                         if (locationBtn) locationBtn.disabled = isManual;
-
-                        if (isManual && latLongInput) {
-                            latLongInput.focus();
-                        }
+                        if (isManual && latLongInput) latLongInput.focus();
                     });
                 });
 
@@ -1122,14 +1866,14 @@
                     const confirmedContainer = document.getElementById('persons-unaccounted-container');
                     const possibleContainer = document.getElementById('possible-persons-container');
                     lifeInvolvementGroup.addEventListener('change', (e) => {
-                        confirmedContainer.style.display = 'none';
-                        possibleContainer.style.display = 'none';
+                        confirmedContainer.classList.add('hidden-input');
+                        possibleContainer.classList.add('hidden-input');
                         confirmedContainer.querySelector('input').value = '';
                         possibleContainer.querySelector('input').value = '';
                         if (e.target.value === 'Life Involvement Confirmed') {
-                            confirmedContainer.style.display = 'block';
+                            confirmedContainer.classList.remove('hidden-input');
                         } else if (e.target.value === 'Life Involvement not confirmed') {
-                            possibleContainer.style.display = 'block';
+                            possibleContainer.classList.remove('hidden-input');
                         }
                     });
                 }
@@ -1140,12 +1884,8 @@
                     sfExposuresGroup.addEventListener('change', () => {
                         const isExposureChecked = sfExposuresGroup.querySelector('input[value="Exposure"]').checked;
                         const isMultipleChecked = sfExposuresGroup.querySelector('input[value="Multiple Exposures"]').checked;
-                        if (isExposureChecked || isMultipleChecked) {
-                            locationInput.style.display = 'block';
-                        } else {
-                            locationInput.style.display = 'none';
-                            locationInput.value = '';
-                        }
+                        locationInput.classList.toggle('hidden-input', !(isExposureChecked || isMultipleChecked));
+                        if (!isExposureChecked && !isMultipleChecked) locationInput.value = '';
                     });
                 }
 
@@ -1155,8 +1895,7 @@
                         const considerationsEl = document.getElementById('heavy-vehicle-considerations');
                         const heavyRescueCheckbox = document.querySelector('#rcr-resources-required-group input[value="Heavy Rescue"]');
                         const officerCheckbox = document.querySelector('#rcr-resources-required-group input[value="Officer"]');
-                        
-                        considerationsEl.style.display = e.target.checked ? 'block' : 'none';
+                        considerationsEl.classList.toggle('hidden-input', !e.target.checked);
                         if (e.target.checked) {
                             heavyRescueCheckbox.checked = true;
                             officerCheckbox.checked = true;
@@ -1174,12 +1913,98 @@
                     rcrEntrapmentGroup.addEventListener('change', (e) => {
                         const oneTrapped = rcrEntrapmentGroup.querySelector('input[value="1 Person Trapped"]').checked;
                         const multipleTrapped = rcrEntrapmentGroup.querySelector('input[value="Multiple persons trapped"]').checked;
-                        
-                        advisory.style.display = (oneTrapped || multipleTrapped) ? 'block' : 'none';
-                        
+                        advisory.classList.toggle('hidden-input', !(oneTrapped || multipleTrapped));
                         if (e.target.value === "Multiple persons trapped") {
-                             multipleInput.style.display = e.target.checked ? 'block' : 'none';
+                             multipleInput.classList.toggle('hidden-input', !e.target.checked);
                              if (!e.target.checked) multipleInput.value = '';
+                        }
+                    });
+                }
+
+                // Multiple Warnings Logic
+                ['bf', 'ob'].forEach(prefix => {
+                    const addWarning2Checkbox = document.getElementById(`${prefix}-add-warning-2-checkbox`);
+                    const addWarning3Checkbox = document.getElementById(`${prefix}-add-warning-3-checkbox`);
+                    const warning2Container = document.getElementById(`${prefix}-warning-2-container`);
+                    const warning3Container = document.getElementById(`${prefix}-warning-3-container`);
+                    const addWarning3Label = document.getElementById(`${prefix}-add-warning-3-label`);
+                    if(addWarning2Checkbox) {
+                        addWarning2Checkbox.addEventListener('change', (e) => {
+                            const show = e.target.checked;
+                            warning2Container.classList.toggle('hidden-section', !show);
+                            addWarning3Label.classList.toggle('hidden-section', !show);
+                            if (!show) {
+                                addWarning3Checkbox.checked = false;
+                                warning3Container.classList.add('hidden-section');
+                            }
+                        });
+                        addWarning3Checkbox.addEventListener('change', (e) => {
+                            warning3Container.classList.toggle('hidden-section', !e.target.checked);
+                        });
+                    }
+                });
+
+                // Compass Logic
+                const compassGrid = document.querySelector('.compass-grid');
+                const directionInput = document.getElementById('bf-direction-travel');
+                if (compassGrid && directionInput) {
+                    compassGrid.addEventListener('change', (e) => {
+                        if (e.target.type === 'checkbox') {
+                            const checkedDirections = [];
+                            const checkboxes = compassGrid.querySelectorAll('input[type="checkbox"]:checked');
+                            checkboxes.forEach(cb => { checkedDirections.push(compassMap[cb.value]); });
+                            directionInput.value = checkedDirections.join(', ');
+                        }
+                    });
+                }
+
+                // Ongoing Bushfire Logic
+                const obManagedUnder = document.getElementById('ob-managed-under');
+                const obLgaCheckbox = document.getElementById('ob-lga-checkbox');
+                const obLgaName = document.getElementById('ob-lga-name');
+                const obDfesCheckbox = document.querySelector('#ob-controlling-agency-group input[value="DFES"]');
+                if (obManagedUnder && obLgaCheckbox && obLgaName && obDfesCheckbox) {
+                    obManagedUnder.addEventListener('change', e => {
+                        if (e.target.value === 'Fire Brigade Act 1942') {
+                            obDfesCheckbox.checked = true;
+                        }
+                    });
+                    obLgaCheckbox.addEventListener('change', e => {
+                        obLgaName.classList.toggle('hidden-input', !e.target.checked);
+                        if (!e.target.checked) obLgaName.value = '';
+                    });
+                }
+
+                const obIncidentStatus = document.getElementById('ob-incident-status');
+                const obTimeContainedWrapper = document.getElementById('ob-time-contained-wrapper');
+                const obTimeContainedLabel = document.getElementById('ob-time-contained-label');
+                if (obIncidentStatus && obTimeContainedWrapper && obTimeContainedLabel) {
+                    obIncidentStatus.addEventListener('change', e => {
+                        const status = e.target.value;
+                        if (status === 'Contained and Controlled') {
+                            obTimeContainedWrapper.style.display = 'none';
+                        } else {
+                            obTimeContainedWrapper.style.display = 'block';
+                            if (status === 'Contained and Not yet Controlled') {
+                                obTimeContainedLabel.textContent = 'Estimated time until Controlled';
+                            } else {
+                                obTimeContainedLabel.textContent = 'Estimated time until contained';
+                            }
+                        }
+                    });
+                }
+
+                const isgGroup = document.getElementById('ob-isg-group');
+                if (isgGroup) {
+                    const scheduledDetails = document.getElementById('ob-isg-scheduled-details');
+                    const plannedDetails = document.getElementById('ob-isg-planned-details');
+                    isgGroup.addEventListener('change', e => {
+                        scheduledDetails.classList.add('hidden-input');
+                        plannedDetails.classList.add('hidden-input');
+                        if (e.target.value === 'Scheduled') {
+                            scheduledDetails.classList.remove('hidden-input');
+                        } else if (e.target.value === 'Planned') {
+                            plannedDetails.classList.remove('hidden-input');
                         }
                     });
                 }
@@ -1189,20 +2014,34 @@
                 document.querySelectorAll('.button-group').forEach(group => {
                     const hiddenInput = group.querySelector('input[type="hidden"]');
                     const buttons = group.querySelectorAll('.option-button');
-                    
                     buttons.forEach(button => {
                         button.addEventListener('click', () => {
-                            if (hiddenInput) hiddenInput.value = button.dataset.value;
+                            const value = button.dataset.value;
+                            if (hiddenInput) hiddenInput.value = value;
                             buttons.forEach(btn => btn.classList.remove('selected'));
                             button.classList.add('selected');
 
                             if (group.classList.contains('arrival-buttons')) {
                                 const form = group.closest('form');
-                                const descElId = form.id.startsWith('bf') ? 'bf-arrival-desc' : (form.id.startsWith('sf') ? 'sf-arrival-desc' : 'rc-arrival-desc');
+                                let descElId;
+                                if (form.id.startsWith('bf')) descElId = 'bf-arrival-desc';
+                                else if (form.id.startsWith('sf')) descElId = 'sf-arrival-desc';
+                                else if (form.id.startsWith('road-crash')) descElId = 'rcr-arrival-desc';
+                                else if (form.id.startsWith('hazmat')) descElId = 'hm-arrival-desc';
                                 const descEl = document.getElementById(descElId);
                                 if (descEl) {
                                     descEl.textContent = button.dataset.description;
                                     descEl.style.display = 'block';
+                                }
+                            }
+
+                            if (group.classList.contains('warning-buttons') && (group.closest('form').id.includes('bushfire'))) {
+                                const warningId = group.dataset.warningId; // e.g., "bf-1" or "ob-1"
+                                const prefix = warningId.split('-')[0];
+                                const num = warningId.split('-')[1];
+                                const dropdown = document.getElementById(`${prefix}-action-statement-${num}`);
+                                if (dropdown) {
+                                    updateActionStatementDropdown(value, dropdown);
                                 }
                             }
                         });
@@ -1227,41 +2066,33 @@
                 const type = manualIncidentType.value || 'N/A';
                 const location = manualLocation.value || 'N/A';
                 const number = manualIncidentNumber.value || 'N/A';
-                
                 if (type === 'N/A' && location === 'N/A' && number === 'N/A') return null;
-
                 const name = `${type} (${location}) - ${number}`;
                 const subject = `${number}, ${type}, ${location}, Sitrep`;
                 return { name, subject };
             }
 
             function updateIncidentName() {
-                const activeForm = document.querySelector('.checklist-form.active');
-                if (!activeForm) return;
-
-                const nameManuallyCheckbox = activeForm.querySelector('.name-manually-checkbox');
-                if (nameManuallyCheckbox && nameManuallyCheckbox.checked) return;
-
-                const incidentNameInput = activeForm.querySelector('input[name="Incident Name"]');
-                if (!incidentNameInput) return;
-
                 const type = toTitleCase(manualIncidentType.value.trim());
                 const location = toTitleCase(manualLocation.value.trim());
-
-                incidentNameInput.value = (type && location) ? `${location} ${type}` : '';
+                const autoName = (type && location) ? `${location} ${type}` : '';
+                
+                forms.forEach(form => {
+                    const incidentNameInput = form.querySelector('input[name="Incident Name"]');
+                    const nameManuallyCheckbox = form.querySelector('.name-manually-checkbox');
+                    if (incidentNameInput && (!nameManuallyCheckbox || !nameManuallyCheckbox.checked)) {
+                        incidentNameInput.value = autoName;
+                    }
+                });
             }
 
             function autoSelectChecklist(text) {
                 const lowerText = text.toLowerCase();
                 let newChecklistType = '';
-                if (lowerText.includes('active alarm') || lowerText.includes('structure')) {
-                    newChecklistType = 'structure-fire';
-                } else if (lowerText.includes('bushfire')) {
-                    newChecklistType = 'bushfire';
-                } else if (lowerText.includes('road crash') || lowerText.includes('rcr')) {
-                    newChecklistType = 'road-crash';
-                }
-
+                if (lowerText.includes('hazmat')) newChecklistType = 'hazmat';
+                else if (lowerText.includes('active alarm') || lowerText.includes('structure')) newChecklistType = 'structure-fire';
+                else if (lowerText.includes('bushfire')) newChecklistType = 'bushfire';
+                else if (lowerText.includes('road crash') || lowerText.includes('rcr')) newChecklistType = 'road-crash';
                 if (newChecklistType) {
                     checklistSelector.value = newChecklistType;
                     switchForm(newChecklistType);
@@ -1272,7 +2103,6 @@
                 let incidentNumber = '', incidentType = '', incidentLocation = '';
                 const cadMatch = title.match(/CAD-ID:\s*"?(\d+)"?/i);
                 if (cadMatch && cadMatch[1]) incidentNumber = cadMatch[1].trim();
-
                 const parenthesisIndex = title.indexOf('(');
                 if (parenthesisIndex > -1) {
                     incidentType = title.substring(0, parenthesisIndex).trim();
@@ -1285,7 +2115,6 @@
                         if(closingParenIndex > -1) incidentLocation = insideParenthesis.substring(0, closingParenIndex).replace(/"/g, '').trim();
                     }
                 }
-
                 if (!incidentType && !incidentLocation && !incidentNumber) {
                      const parts = title.split(' - ');
                      incidentType = parts[0] ? parts[0].trim() : '';
@@ -1329,30 +2158,25 @@
                     alert("Please select an incident or enter the details manually.");
                     return;
                 }
-                
                 const activeForm = document.querySelector('.checklist-form.active');
                 if (!activeForm) return;
-
                 const formData = new FormData(activeForm);
                 const oic = formData.get('Report by (OIC)') || 'N/A';
                 const brigade = formData.get('Brigade') || 'N/A';
-                
-                let reportBody = `INCIDENT REPORT - ${activeForm.id.replace('-form', '').toUpperCase()}\n`;
+                let reportBody = `INCIDENT REPORT - ${checklistSelector.options[checklistSelector.selectedIndex].text.toUpperCase()}\n`;
                 reportBody += `Report Time: ${new Date().toLocaleString()}\n`;
                 reportBody += `Report by (OIC): ${oic}\n`;
                 reportBody += `Brigade: ${brigade}\n`;
                 reportBody += "----------------------------------------\n";
-                reportBody += `INCIDENT: ${incidentDetails.name}\n`;
-
-                const arrivalCode = formData.get('Arrival Code');
-                if (arrivalCode) reportBody += `Arrival Code: ${arrivalCode}\n`;
-
-                const classification = formData.get('Classification');
-                if (classification) reportBody += `Classification: ${classification}\n`;
-
+                if (activeForm.id !== 'ongoing-bushfire-form') {
+                    reportBody += `INCIDENT: ${incidentDetails.name}\n`;
+                    const arrivalCode = formData.get('Arrival Code');
+                    if (arrivalCode) reportBody += `Arrival Code: ${arrivalCode}\n`;
+                    const classification = formData.get('Classification');
+                    if (classification) reportBody += `Classification: ${classification}\n`;
+                }
                 if (activeForm.id === 'bushfire-form') {
                     reportBody += "\n--- PAFTACS ---\n";
-                    
                     reportBody += `P - Position:\n`;
                     const latLong = formData.get('Lat/Long');
                     if (latLong) reportBody += `    Lat/Long: ${latLong}\n`;
@@ -1360,21 +2184,16 @@
                     if (streetAddress) reportBody += `    Street Address: ${streetAddress}\n`;
                     const direction = formData.get("Fire's Direction of Travel");
                     if (direction) reportBody += `    Fire's Direction of Travel: ${direction}\n`;
-                    
                     const propertyThreatened = formData.getAll('Property Threatened').join(', ');
                     if (propertyThreatened) reportBody += `    Property Threatened: ${propertyThreatened}\n`;
-
                     const area = formData.get('Area (ha)');
                     if(area) reportBody += `A - Area (ha): ${area}\n`;
-
                     const fuelLoad = formData.get('Fuel Load');
                     const fuelType = formData.get('Fuel Type');
                     const fireIntensity = formData.get('Fire Intensity');
                     reportBody += `F - Fuel: ${fuelLoad}, ${fuelType}, ${fireIntensity}\n`;
-
                     const time = formData.get('Time to Control');
                     if(time) reportBody += `T - Time to Control: ${time}\n`;
-
                     let assistanceStr = formData.getAll('Assistance Required').join(', ');
                     const fRS = formData.get('FRS Required'); if (fRS) assistanceStr += `, FRS: ${fRS}`;
                     const heavies = formData.get('Heavies Required'); if (heavies) assistanceStr += `, Heavies: ${heavies}`;
@@ -1385,7 +2204,6 @@
                     const additionalDetails = formData.get('Additional Resource Details');
                     if (additionalDetails) assistanceStr += `\n    Details: ${additionalDetails}`;
                     if (assistanceStr) reportBody += `A - Assistance Required: ${assistanceStr}\n`;
-
                     reportBody += `C - Comms & Control:\n`;
                     const incidentName = formData.get('Incident Name');
                     if(incidentName) reportBody += `    Incident Name: ${incidentName}\n`;
@@ -1397,156 +2215,159 @@
                     if(ic) reportBody += `    IC: ${ic}\n`;
                     const ops = formData.get('Operations Officer');
                     if(ops) reportBody += `    Ops: ${ops}\n`;
-
                     reportBody += `S - Safety:\n`;
                     const wind = formData.get('Wind Direction and Strength');
                     if(wind) reportBody += `    Wind: ${wind}\n`;
                     const safety = formData.get('Safety Concerns (Red Flag Warnings)');
                     if(safety) reportBody += `    Concerns: ${safety}\n`;
-
                     reportBody += "\n--- PUBLIC INFORMATION ---\n";
-                    const warning = formData.get('Warning Level');
-                    if (warning) reportBody += `Warning Level: ${warning}\n`;
-                    const nBoundary = formData.get('Northern Boundary');
-                    const eBoundary = formData.get('Eastern Boundary');
-                    const sBoundary = formData.get('Southern Boundary');
-                    const wBoundary = formData.get('Western Boundary');
-                    if(nBoundary || eBoundary || sBoundary || wBoundary) {
-                        reportBody += `Warning Boundaries:\n`;
-                        if(nBoundary) reportBody += `    N: ${nBoundary}\n`;
-                        if(eBoundary) reportBody += `    E: ${eBoundary}\n`;
-                        if(sBoundary) reportBody += `    S: ${sBoundary}\n`;
-                        if(wBoundary) reportBody += `    W: ${wBoundary}\n`;
-                    }
-
-                } else if (activeForm.id === 'structure-fire-form' || activeForm.id === 'road-crash-form') {
-                    const latLong = formData.get('Lat/Long');
-                    const streetAddress = formData.get('Street Address');
-                    if (latLong || streetAddress) {
-                        reportBody += `Confirmed Location:\n`;
-                        if (latLong) reportBody += `    Lat/Long: ${latLong}\n`;
-                        if (streetAddress) reportBody += `    Street Address: ${streetAddress}\n`;
-                    }
-
-                    if (activeForm.id === 'structure-fire-form') {
-                        reportBody += "\n--- HAULER ---\n";
-
-                        let heightStr = formData.getAll('Height').join(', ');
-                        const heightSpecify = formData.get('Height Specify');
-                        if (heightSpecify) heightStr += `, Multi-Storey: ${heightSpecify}`;
-                        if (heightStr) reportBody += `H - Height: ${heightStr}\n`;
-
-                        const areaDim1 = formData.get('Area Dim 1');
-                        const areaDim2 = formData.get('Area Dim 2');
-                        if (areaDim1 && areaDim2) reportBody += `A - Area/Size: ${areaDim1} x ${areaDim2}\n`;
-
-                        reportBody += `U - Use / Construction:\n`;
-                        let useStr = formData.getAll('Use').join(', ');
-                        const useOther = formData.get('Use Other');
-                        if (useOther) useStr += `, Other: ${useOther}`;
-                        if (useStr) reportBody += `    Use: ${useStr}\n`;
-                        
-                        let wallsStr = formData.getAll('Walls').join(', ');
-                        const wallsOther = formData.get('Walls Other');
-                        if (wallsOther) wallsStr += `, Other: ${wallsOther}`;
-                        if (wallsStr) reportBody += `    Walls: ${wallsStr}\n`;
-
-                        let roofStr = formData.getAll('Roof').join(', ');
-                        const roofOther = formData.get('Roof Other');
-                        if (roofOther) roofStr += `, Other: ${roofOther}`;
-                        if (roofStr) reportBody += `    Roof: ${roofStr}\n`;
-
-                        const asbestos = formData.getAll('Asbestos').join(', ');
-                        if (asbestos) reportBody += `    Asbestos: ${asbestos}\n`;
-
-                        reportBody += `L - Lines of Hose / Actions:\n`;
-                        const lines6040 = formData.get('Lines of 60-40');
-                        if (lines6040) reportBody += `    Lines of 60-40: ${lines6040}\n`;
-                        const hoseReels = formData.get('Hose Reels');
-                        if (hoseReels) reportBody += `    Hose Reels: ${hoseReels}\n`;
-                        const baTeams = formData.get('BA Teams');
-                        if (baTeams) reportBody += `    BA Teams: ${baTeams}\n`;
-                        let actionsStr = formData.getAll('Actions').join(', ');
-                        const actionsOther = formData.get('Actions Other');
-                        if (actionsOther) actionsStr += `, Other: ${actionsOther}`;
-                        if (actionsStr) reportBody += `    Actions: ${actionsStr}\n`;
-
-                        reportBody += `E - Exposures / Evacuations:\n`;
-                        let exposuresStr = formData.getAll('Exposures').join(', ');
-                        const exposureLocation = formData.get('Location of Exposures');
-                        if (exposureLocation) exposuresStr += ` (Location: ${exposureLocation})`;
-                        if (exposuresStr) reportBody += `    Exposures: ${exposuresStr}\n`;
-                        const evacuations = formData.get('Evacuations');
-                        if (evacuations) reportBody += `    Evacuations: ${evacuations}\n`;
-                        const lifeInvolvement = formData.get('Life Involvement');
-                        if (lifeInvolvement) {
-                            reportBody += `    Life Involvement: ${lifeInvolvement}\n`;
-                            const personsUnaccounted = formData.get('Number of Persons Unaccounted for');
-                            if (personsUnaccounted) reportBody += `        Persons Unaccounted For: ${personsUnaccounted}\n`;
-                            const possiblePersons = formData.get('Possible Persons Unaccounted for');
-                            if (possiblePersons) reportBody += `        Possible Persons: ${possiblePersons}\n`;
-                        }
-
-                        reportBody += `R - Resources:\n`;
-                        let resAttStr = formData.getAll('Resources In Attendance').join(', ');
-                        const resAttOther = formData.get('Resources In Attendance Other');
-                        if (resAttOther) resAttStr += `, Other: ${resAttOther}`;
-                        if (resAttStr) reportBody += `    In Attendance: ${resAttStr}\n`;
-                        let resReqStr = formData.getAll('Resources Required').join(', ');
-                        const resReqOther = formData.get('Resources Required Other');
-                        if (resReqOther) resReqStr += `, Other: ${resReqOther}`;
-                        if (resReqStr) reportBody += `    Required: ${resReqStr}\n`;
-
-                        reportBody += `S - Staging / Safety:\n`;
-                        const incidentName = formData.get('Incident Name');
-                        if(incidentName) reportBody += `    Incident Name: ${incidentName}\n`;
-                        const commandChannel = formData.get('Command Channel');
-                        if(commandChannel) reportBody += `    Command Channel: ${commandChannel}\n`;
-                        const controlPoint = formData.get('Control Point');
-                        if(controlPoint) reportBody += `    Control Point: ${controlPoint}\n`;
-                        const ic = formData.get('Incident Controller');
-                        if(ic) reportBody += `    IC: ${ic}\n`;
-                        const ops = formData.get('Operations Officer');
-                        if(ops) reportBody += `    Ops: ${ops}\n`;
-
-                        reportBody += "\n--- PUBLIC INFORMATION ---\n";
-                        const warning = formData.get('Warning Level');
-                        if (warning) reportBody += `Warning Level: ${warning}\n`;
-                        const smokeDir = formData.get('Smoke Direction');
-                        if (smokeDir) reportBody += `Smoke Direction: ${smokeDir}\n`;
-                        const communityImpact = formData.get('Community Impact');
-                        if (communityImpact) reportBody += `Community Impact: ${communityImpact}\n`;
-                    } else { // RCR Form
-                        reportBody += "\n--- SITREP ---\n";
-                        const processedFields = new Set(['Report by (OIC)', 'Brigade', 'Arrival Code', 'Classification', 'Lat/Long', 'Street Address']);
-                        
-                        const sitOther = formData.get('Situation Other'); if (sitOther) formData.append('Situation', `Other: ${sitOther}`); formData.delete('Situation Other');
-                        const entrapSpecify = formData.get('Entrapment Specify');
-                        if (entrapSpecify) {
-                            const entrapValues = formData.getAll('Entrapment');
-                            const multiIndex = entrapValues.indexOf('Multiple persons trapped');
-                            if (multiIndex !== -1) entrapValues[multiIndex] = `Multiple persons trapped (${entrapSpecify})`;
-                            formData.delete('Entrapment');
-                            entrapValues.forEach(v => formData.append('Entrapment', v));
-                        }
-                        formData.delete('Entrapment Specify');
-                        const hazOther = formData.get('Hazards Other'); if (hazOther) formData.append('Hazards', `Other: ${hazOther}`); formData.delete('Hazards Other');
-                        const actOther = formData.get('Actions Other'); if (actOther) formData.append('Actions', `Other: ${actOther}`); formData.delete('Actions Other');
-                        const rcrResReqOther = formData.get('RCR Resources Required Other'); if (rcrResReqOther) formData.append('Resources Required', `Other: ${rcrResReqOther}`); formData.delete('RCR Resources Required Other');
-                        const rcrResAttOther = formData.get('RCR Resources In Attendance Other'); if (rcrResAttOther) formData.append('Resources In Attendance', `Other: ${rcrResAttOther}`); formData.delete('RCR Resources In Attendance Other');
-
-                        for (const [name, value] of formData.entries()) {
-                            if (processedFields.has(name) || value.trim() === '') continue;
-                            const elements = activeForm.querySelectorAll(`[name="${name}"]`);
-                            if (elements.length > 1 && (elements[0].type === 'checkbox' || elements[0].type === 'radio')) {
-                                const values = formData.getAll(name).join(', ');
-                                if(values) reportBody += `${name}: ${values}\n`;
-                                processedFields.add(name);
-                            } else {
-                                reportBody += `${name}: ${value}\n`;
+                    for (let i = 1; i <= 3; i++) {
+                        const warningContainer = document.getElementById(`bf-warning-${i}-container`);
+                        if (i > 1 && warningContainer.classList.contains('hidden-section')) continue;
+                        const warning = formData.get(`Warning Level ${i}`);
+                        if (warning && warning !== 'No Warning Required') {
+                            reportBody += `\n--- WARNING AREA ${i} ---\n`;
+                            reportBody += `Warning Type: ${warning}\n`;
+                            const actionStatement = formData.get(`Action Statement ${i}`);
+                            if (actionStatement) reportBody += `Action Statement: ${actionStatement}\n`;
+                            const nBoundary = formData.get(`Northern Boundary ${i}`);
+                            const eBoundary = formData.get(`Eastern Boundary ${i}`);
+                            const sBoundary = formData.get(`Southern Boundary ${i}`);
+                            const wBoundary = formData.get(`Western Boundary ${i}`);
+                            if(nBoundary || eBoundary || sBoundary || wBoundary) {
+                                reportBody += `Boundaries:\n`;
+                                if(nBoundary) reportBody += `    (N): ${nBoundary}\n`;
+                                if(eBoundary) reportBody += `    (E): ${eBoundary}\n`;
+                                if(sBoundary) reportBody += `    (S): ${sBoundary}\n`;
+                                if(wBoundary) reportBody += `    (W): ${wBoundary}\n`;
                             }
+                        } else if (i === 1 && warning) {
+                             reportBody += `Warning Type: ${warning}\n`;
                         }
                     }
+                } else if (activeForm.id === 'structure-fire-form' || activeForm.id === 'hazmat-form') {
+                    // Common logic for SF and Hazmat can go here if needed
+                } else if (activeForm.id === 'ongoing-bushfire-form') {
+                    const incidentName = formData.get('Incident Name');
+                    reportBody += `Incident name: ${incidentName}\n`;
+                    const incidentStatus = formData.get('Incident Status');
+                    if (incidentStatus) reportBody += `Incident status: ${incidentStatus}\n`;
+                    const incidentLevel = formData.get('Incident Level');
+                    if (incidentLevel) reportBody += `Incident Level: ${incidentLevel}\n`;
+                    const managedUnder = formData.get('Managed Under');
+                    if (managedUnder) reportBody += `Incident is being managed under: ${managedUnder}\n`;
+                    
+                    let agencies = formData.getAll('Controlling Agency');
+                    const lgaName = formData.get('LGA Name');
+                    if (lgaName) {
+                        const lgaIndex = agencies.indexOf('LGA');
+                        if (lgaIndex > -1) {
+                            agencies[lgaIndex] = `LGA - ${lgaName}`;
+                        }
+                    }
+                    if (agencies.length > 0) reportBody += `Controlling Agency: ${agencies.join(', ')}\n`;
+
+                    const commandChannel = formData.get('Command Channel');
+                    if (commandChannel) reportBody += `Command Channel: ${commandChannel}\n`;
+                    const controlPoint = formData.get('Control Point');
+                    if (controlPoint) reportBody += `Control point: ${controlPoint}\n`;
+                    const fireSize = formData.get('Fire Size (ha)');
+                    if (fireSize) reportBody += `Fire Size: ${fireSize} ha\n`;
+                    
+                    if (incidentStatus !== 'Contained and Controlled') {
+                        const timeContained = formData.get('Estimated time until contained');
+                        if (timeContained) {
+                            const label = (incidentStatus === 'Contained and Not yet Controlled') ? 'Estimated time until Controlled' : 'Estimated time until contained';
+                            reportBody += `${label}: ${timeContained}\n`;
+                        }
+                    }
+                    
+                    const timeSafe = formData.get('Estimated time until safe');
+                    if (timeSafe) reportBody += `Estimated time until safe: ${timeSafe}\n`;
+                    
+                    reportBody += `\n--- IMT STRUCTURE ---\n`;
+                    const imt_ic = formData.get('IMT IC'); if (imt_ic) reportBody += `IC: ${imt_ic}\n`;
+                    const imt_oo = formData.get('IMT OO'); if (imt_oo) reportBody += `OO: ${imt_oo}\n`;
+                    const imt_po = formData.get('IMT PO'); if (imt_po) reportBody += `PO: ${imt_po}\n`;
+                    const imt_lo = formData.get('IMT LO'); if (imt_lo) reportBody += `LO: ${imt_lo}\n`;
+                    const imt_pio = formData.get('IMT PIO'); if (imt_pio) reportBody += `PIO: ${imt_pio}\n`;
+
+                    reportBody += `\n--- OBJECTIVES ---\n`;
+                    for (let i = 1; i <= 5; i++) {
+                        const obj = formData.get(`Objective ${i}`);
+                        const status = formData.get(`Objective ${i} Status`);
+                        if (obj) {
+                            reportBody += `Objective ${i}: ${obj} (${status})\n`;
+                        }
+                    }
+
+                    reportBody += `\n--- STRATEGIES ---\n`;
+                    let strategy = formData.get('Strategies');
+                    const strategyOther = formData.get('Strategies Other');
+                    if (strategyOther) {
+                        strategy += `, Other: ${strategyOther}`;
+                    }
+                    if (strategy) reportBody += `Strategies: ${strategy}\n`;
+
+                    reportBody += `\n--- COMMUNITY WARNINGS ---\n`;
+                    for (let i = 1; i <= 3; i++) {
+                        const warningContainer = document.getElementById(`ob-warning-${i}-container`);
+                        if (i > 1 && warningContainer.classList.contains('hidden-section')) continue;
+                        const warning = formData.get(`Warning Level ${i}`);
+                        if (warning && warning !== 'No Warning Required') {
+                            reportBody += `\n--- WARNING AREA ${i} ---\n`;
+                            reportBody += `Warning Type: ${warning}\n`;
+                            const actionStatement = formData.get(`Action Statement ${i}`);
+                            if (actionStatement) reportBody += `Action Statement: ${actionStatement}\n`;
+                            const nBoundary = formData.get(`Northern Boundary ${i}`);
+                            const eBoundary = formData.get(`Eastern Boundary ${i}`);
+                            const sBoundary = formData.get(`Southern Boundary ${i}`);
+                            const wBoundary = formData.get(`Western Boundary ${i}`);
+                            if(nBoundary || eBoundary || sBoundary || wBoundary) {
+                                reportBody += `Boundaries:\n`;
+                                if(nBoundary) reportBody += `    (N): ${nBoundary}\n`;
+                                if(eBoundary) reportBody += `    (E): ${eBoundary}\n`;
+                                if(sBoundary) reportBody += `    (S): ${sBoundary}\n`;
+                                if(wBoundary) reportBody += `    (W): ${wBoundary}\n`;
+                            }
+                        } else if (i === 1 && warning) {
+                             reportBody += `Warning Type: ${warning}\n`;
+                        }
+                    }
+
+                    const risks = formData.get('Key Identified Risks');
+                    if (risks) reportBody += `\n--- KEY IDENTIFIED RISKS ---\n${risks}\n`;
+
+                    let supportAgencies = formData.getAll('Support Agencies').join(', ');
+                    const supportOther = formData.get('Support Agencies Other');
+                    if (supportOther) supportAgencies += `, Other: ${supportOther}`;
+                    if (supportAgencies) reportBody += `\nSupport agencies on site: ${supportAgencies}\n`;
+
+                    const relief = formData.get('Relief Management');
+                    if (relief) {
+                        let reliefStr = `Relief management: ${relief}`;
+                        if (relief === 'Required') {
+                            const reliefDetails = formData.get('Relief Required Details');
+                            if (reliefDetails) reliefStr += `\n    Details: ${reliefDetails}`;
+                        }
+                        reportBody += `\n${reliefStr}\n`;
+                    }
+
+                    const isgUpdate = formData.get('ISG Update');
+                    if (isgUpdate) {
+                        let isgStr = `\n--- INCIDENT SUPPORT GROUP ---\nISG updates: ${isgUpdate}`;
+                        if (isgUpdate === 'Scheduled') {
+                            const details = formData.get('ISG Scheduled Details');
+                            if (details) isgStr += ` (${details})`;
+                        } else if (isgUpdate === 'Planned') {
+                            const details = formData.get('ISG Planned Details');
+                            if (details) isgStr += ` (${details})`;
+                        }
+                        reportBody += `${isgStr}\n`;
+                    }
+
+                    const furtherUpdate = formData.get('Further Update');
+                    if (furtherUpdate) reportBody += `\nFurther Update: ${furtherUpdate}\n`;
                 }
                 
                 generatedReportText = reportBody;
@@ -1590,6 +2411,12 @@
             initializeInteractiveInputs();
             fetchAndPopulateIncidents();
             setInterval(fetchAndPopulateIncidents, 120000);
+            ['bf', 'ob'].forEach(prefix => {
+                for (let i = 1; i <= 3; i++) {
+                    const dropdown = document.getElementById(`${prefix}-action-statement-${i}`);
+                    if (dropdown) updateActionStatementDropdown('', dropdown);
+                }
+            });
             switchForm(checklistSelector.value);
             updateIncidentName();
         });
