@@ -141,6 +141,28 @@
     .location-input-group { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: center; }
     .location-input-group .full-width-item { grid-column: 1 / -1; }
     .warning-status-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    /* Refresh button style aligned with app */
+    .refresh-btn {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      width: 100%;
+    }
+    .refresh-btn:hover { border-color: var(--label-color); }
+    .selector-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      align-items: end;
+    }
+    @media (max-width: 500px) {
+      .selector-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -163,7 +185,10 @@
         <div class="form-stack">
           <section class="control-section">
             <label for="global-incident-selector">Select From Active Incidents:</label>
-            <select id="global-incident-selector"><option value="">Loading incidents...</option></select>
+            <div class="selector-row">
+              <select id="global-incident-selector"><option value="">Loading incidents...</option></select>
+              <button id="refresh-incidents-btn" class="refresh-btn" type="button">Refresh Incident Feed</button>
+            </div>
           </section>
           <p style="text-align: center; color: var(--label-color);">- OR -</p>
           <section class="form-stack">
@@ -1530,6 +1555,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const globalIncidentSelector = document.getElementById('global-incident-selector');
+      const refreshIncidentsBtn = document.getElementById('refresh-incidents-btn');
       const manualIncidentNumber = document.getElementById('manual-incident-number');
       const manualIncidentType = document.getElementById('manual-incident-type');
       const manualLocation = document.getElementById('manual-location');
@@ -1545,7 +1571,10 @@
 
       let generatedReportText = '';
       let generatedReportTime = null;
-      const RSS_URL = 'https://api.allorigins.win/raw?url=https://api.emergency.wa.gov.au/v1/rss/incidents';
+
+      // Preferred RSS proxy (Netlify Function)
+      const preferredProxyUrl = 'https://firechecklist.netlify.app/.netlify/functions/rss';
+      const rssFallbacks = []; // add any fallbacks if needed
 
       const actionStatementsMap = {
         'Advice': ['PREPARE NOW', 'STAY INFORMED', 'MONITOR CONDITIONS'],
@@ -1601,31 +1630,69 @@
       // Utilities
       function toTitleCase(str){ if(!str) return ''; return str.toLowerCase().split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '); }
 
-      async function fetchAndPopulateIncidents() {
-        try {
-          const response = await fetch(RSS_URL);
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-          const xmlString = await response.text();
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-          const items = xmlDoc.querySelectorAll("item");
-          const sortedItems = Array.from(items).sort((a,b)=> new Date(b.querySelector("pubDate")?.textContent||0) - new Date(a.querySelector("pubDate")?.textContent||0));
-          const currentVal = globalIncidentSelector.value;
-          globalIncidentSelector.innerHTML = '<option value="">Select an incident...</option>';
-          sortedItems.forEach(item=>{
-            const title = item.querySelector("title")?.textContent;
-            if(!title || title.toLowerCase().includes('burn off')) return;
-            const option = document.createElement('option');
-            option.value = title; option.textContent = title;
-            globalIncidentSelector.appendChild(option);
-          });
-          globalIncidentSelector.value = currentVal;
-          lastUpdatedEl.textContent = new Date().toLocaleTimeString();
-        } catch (e) {
-          console.error(e);
-          lastUpdatedEl.textContent = `Error at ${new Date().toLocaleTimeString()}`;
-          globalIncidentSelector.innerHTML = '<option value="">Could not load incidents</option>';
+      // New RSS loader using Netlify Function
+      async function fetchText(url) {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.text();
+      }
+      async function fetchRSS() {
+        const urls = [preferredProxyUrl, ...rssFallbacks];
+        let lastErr;
+        for (const url of urls) {
+          try {
+            const xmlString = await fetchText(url);
+            const xmlDoc = new DOMParser().parseFromString(xmlString, 'application/xml');
+            if (xmlDoc.querySelector('parsererror')) throw new Error('Invalid XML');
+            return xmlDoc;
+          } catch (e) {
+            lastErr = e;
+            console.warn('RSS fetch attempt failed:', url, e);
+          }
         }
+        throw lastErr || new Error('All fetch attempts failed');
+      }
+      function populateIncidents(xmlDoc) {
+        const items = Array.from(xmlDoc.querySelectorAll('item'));
+        const parsed = items.map(it => ({
+          title: it.querySelector('title')?.textContent?.trim() || '',
+          pubDate: it.querySelector('pubDate')?.textContent || ''
+        }))
+        .filter(it => it.title)
+        .filter(it => !/burn off/i.test(it.title)) // keep your original filter behavior
+        .sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+
+        const currentVal = globalIncidentSelector.value;
+        globalIncidentSelector.innerHTML = '<option value="">Select an incident...</option>';
+        for (const it of parsed) {
+          const opt = document.createElement('option');
+          opt.value = it.title;
+          opt.textContent = it.title;
+          globalIncidentSelector.appendChild(opt);
+        }
+        globalIncidentSelector.value = currentVal;
+        if (lastUpdatedEl) lastUpdatedEl.textContent = new Date().toLocaleTimeString();
+      }
+      async function refreshIncidents() {
+        try {
+          const xmlDoc = await fetchRSS();
+          populateIncidents(xmlDoc);
+        } catch (e) {
+          console.error('Failed to fetch or parse RSS feed:', e);
+          if (globalIncidentSelector) globalIncidentSelector.innerHTML = '<option value="">Could not load incidents</option>';
+          if (lastUpdatedEl) lastUpdatedEl.textContent = `Error at ${new Date().toLocaleTimeString()}`;
+        }
+      }
+      if (refreshIncidentsBtn) {
+        refreshIncidentsBtn.addEventListener('click', () => {
+          const original = refreshIncidentsBtn.textContent;
+          refreshIncidentsBtn.textContent = 'Refreshing...';
+          refreshIncidentsBtn.disabled = true;
+          refreshIncidents().finally(() => {
+            refreshIncidentsBtn.textContent = original;
+            refreshIncidentsBtn.disabled = false;
+          });
+        });
       }
 
       function updateActionStatementDropdown(warningLevel, dropdownElement) {
@@ -2130,6 +2197,10 @@
         return text;
       }
 
+      // RSS: initial load + periodic refresh
+      refreshIncidents();
+      setInterval(refreshIncidents, 120000);
+
       globalIncidentSelector.addEventListener('change', (e)=>{
         const selectedTitle = e.target.value;
         if (!selectedTitle) { manualIncidentNumber.value=''; manualIncidentType.value=''; manualLocation.value=''; }
@@ -2242,6 +2313,8 @@
         return reportBody;
       }
 
+      generateBtn.addEventListener('click', generateReport);
+
       function generateReport() {
         const incidentDetails = getIncidentDetails();
         if (!incidentDetails) { alert("Please select an incident or enter the details manually."); return; }
@@ -2290,7 +2363,7 @@
         }
 
         if (activeForm.id === 'bushfire-form') {
-          // PAFTACS without extra blank lines between sections; explicit fuel labels
+          // PAFTACS
           reportBody += "\n--- PAFTACS ---\n";
           reportBody += `P - Position:\n`;
           const latLong = formData.get('Lat/Long'); if (latLong) reportBody += `    Lat/Long: ${latLong}\n`;
@@ -2511,7 +2584,7 @@
           if (resAttendance) reportBody += `    In Attendance: ${resAttendance}\n`;
           const estTime = formData.get('Estimated Time'); if (estTime) reportBody += `Estimated Time on Scene: ${estTime}\n`;
 
-          // Public Information section removed for RCR, so no warnings appended here.
+          // Public Information section not appended for RCR.
 
         } else if (activeForm.id === 'hazmat-form') {
           reportBody += "\n--- HAZMAT REPORT ---\n";
@@ -2580,8 +2653,6 @@
         setDispatchButtonsState(true);
       }
 
-      generateBtn.addEventListener('click', generateReport);
-
       copyBtn.addEventListener('click', ()=>{
         if (!generatedReportText || !navigator.clipboard) return;
         navigator.clipboard.writeText(generatedReportText).then(()=>{
@@ -2618,8 +2689,7 @@
       initializeButtonGroups();
       initializeBushfireRequests();
       initializeInteractiveInputs();
-      fetchAndPopulateIncidents();
-      setInterval(fetchAndPopulateIncidents, 120000);
+      // RSS already initialized above
       ['bf','ob'].forEach(prefix=>{ for(let i=1;i<=3;i++){ const dd=document.getElementById(`${prefix}-action-statement-${i}`); if (dd) updateActionStatementDropdown('', dd); } });
       switchForm(checklistSelector.value);
       updateIncidentName();
