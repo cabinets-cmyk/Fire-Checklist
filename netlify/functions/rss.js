@@ -9,6 +9,8 @@ exports.handler = async () => {
       statusCode: resp.status,
       headers: {
         'Content-Type': 'application/rss+xml; charset=utf-8',
+        // You can tighten this to your exact origin if you prefer:
+        // 'Access-Control-Allow-Origin': 'https://firechecklist.netlify.app',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
