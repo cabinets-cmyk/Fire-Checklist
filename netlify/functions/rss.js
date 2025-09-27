@@ -7,7 +7,7 @@ return {
 statusCode: resp.status,
 headers: {
 'Content-Type': 'application/rss+xml; charset=utf-8',
-'Access-Control-Allow-Origin': '',
+'Access-Control-Allow-Origin': '', // important
 'Cache-Control': 'public, max-age=30'
 },
 body
@@ -15,7 +15,7 @@ body
 } catch (e) {
 return {
 statusCode: 502,
-headers: { 'Access-Control-Allow-Origin': '' },
+headers: { 'Access-Control-Allow-Origin': '' }, // important
 body: 'Proxy fetch failed'
 };
 }
